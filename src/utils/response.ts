@@ -44,13 +44,13 @@ const ResponseConstants: ResponseDto[] = [
     {
         successful: false,
         errorCode: '04',
-        message: 'can not signin',
+        message: 'cannot signin',
         data: {},
     },
     {
         successful: false,
         errorCode: '05',
-        message: 'can not approve',
+        message: 'cannot approve',
         data: {},
     },
     {
@@ -64,5 +64,96 @@ const ResponseConstants: ResponseDto[] = [
         errorCode: '07',
         message: `user has been already blocked`,
         data: {},
-    }
+    },
+    {
+        successful: false,
+        errorCode: '08',
+        message: 'this location already exist ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '09',
+        message: 'this locker aready exist ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '10',
+        message: 'cannot create with this location ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '11',
+        message: 'do not have this department ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '12',
+        message: 'cannot open this locker by FaceId ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '13',
+        message: 'do not have this camera ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '14',
+        message: 'department already exist in locker ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '15',
+        message: 'cannot add temporaryDept',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '16',
+        message: 'do not have this tempDept ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '17',
+        message: 'user already exist in locker ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '18',
+        message: 'cannot add temporaryUser ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '19',
+        message: 'do not have this video record ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '20',
+        message: 'token do not match with this locker',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '21',
+        message: 'do not have this tempUser',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '22',
+        message: 'do not have this tempDept',
+        data: {},
+    },
+    
 ]

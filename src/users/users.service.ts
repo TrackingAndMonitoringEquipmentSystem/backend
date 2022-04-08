@@ -32,7 +32,6 @@ export class UsersService {
   }
 
   async viewUser(ids: string) {
-    console.log('view', typeof (ids[0]));
     var idsToNumber = ids.split(',').map(Number);
     const users = await this.usersRepository.find({
       where: {
@@ -81,9 +80,8 @@ export class UsersService {
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto, actorId) {
-    this.usersRepository.save({ ...updateUserDto, id: Number(id), updated_by: actorId });
-    const result = this.usersRepository.findOne(id);
-    //return result;
+    await this.usersRepository.save({ ...updateUserDto, id: Number(id), updated_by: actorId });
+    const result = await this.usersRepository.findOne(id);
     return getResponse('00', result);
   }
 
@@ -190,5 +188,14 @@ export class UsersService {
     else {
       throw new HttpException(getResponse('06', null), HttpStatus.FORBIDDEN);
     }
+  }
+
+  async findByfaceid(filename: string) {
+    let result = await this.usersRepository.findOne({
+      where: {
+        face_id: filename
+      }, relations: ['dept']
+    })
+    return result;
   }
 }

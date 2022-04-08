@@ -1,6 +1,7 @@
 import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { throws } from 'assert';
+import { UsersService } from 'src/users/users.service';
 import { getResponse } from 'src/utils/response';
 import { In, Repository } from 'typeorm';
 import { CreateDepartmentDto } from './dto/create-department.dto';
@@ -12,22 +13,25 @@ export class DepartmentService {
   constructor(
     @InjectRepository(Department)
     private deptRepository: Repository<Department>,
-  ) {}
+    private readonly userService: UsersService
+  ) { }
 
   async create(createDepartmentDto: CreateDepartmentDto, actorId) {
+    //let user = await this.userService.findByEmail(actor.email);
     const dept = await this.deptRepository.create({
       dept_name: createDepartmentDto.dept_name,
-      created_by: actorId
+      created_by: actorId,
+      updated_by: actorId,
     })
     const result = await this.deptRepository.save(dept);
-    throw new HttpException(getResponse('00', result) , HttpStatus.OK);
+    return getResponse('00', result);
   }
 
- async viewAll() {
+  async viewAll() {
     const result = await this.deptRepository.find({
       relations: ['created_by', 'updated_by'],
     });
-    throw new HttpException(getResponse('00', result) , HttpStatus.OK);
+    return getResponse('00', result);
   }
 
   async viewDepartment(ids: string) {
@@ -36,27 +40,44 @@ export class DepartmentService {
       where: {
         id: In(convertIdsToNum),
       },
-      relations: ['created_by','updated_by']
+      relations: ['created_by', 'updated_by']
     })
-    throw new HttpException(getResponse('00', result) , HttpStatus.OK);
+    return getResponse('00', result);
   }
 
-  async findById(id: number) {
-    const result = await this.deptRepository.findOne(id);
-    throw new HttpException(getResponse('00', result), HttpStatus.OK);
+  async findDept(ids: Department[]) {
+    //const convertIdsToNum = ids.split(',').map(Number);
+    const result = await this.deptRepository.find({
+      where: {
+        id: In(ids),
+      }
+    })
+    return result;
   }
 
-  async update(id: string, updateDepartmentDto: UpdateDepartmentDto, actocId) {
+
+  async update(id: string, updateDepartmentDto: UpdateDepartmentDto, actorId) {
+    //console.log('actor', actor.email);
+    //let user = await this.userService.findByEmail(actor.email);
     const result = await this.deptRepository.save({
       dept_name: updateDepartmentDto.dept_name,
-      id: Number(id), 
-      updated_by: actocId
+      id: Number(id),
+      updated_by: actorId
     })
-    throw new HttpException(getResponse('00', result), HttpStatus.OK);
+    return getResponse('00', result);
   }
 
   remove(id: number) {
     this.deptRepository.delete(id);
-    throw new HttpException(getResponse('00', null), HttpStatus.OK);
+    return getResponse('00', null);
+  }
+
+  async findOne(id: number | Department){
+    let result = await this.deptRepository.findOne({
+      where: {
+        id: id
+      }
+    })
+    return result;
   }
 }

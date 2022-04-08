@@ -12,6 +12,8 @@ import { IsDate, IsEmail, IsNotEmpty, Length } from 'class-validator';
 import { Role } from './role.entity';
 import { Department } from 'src/department/entities/department.entity';
 import { type } from 'os';
+import { VideoRecord } from 'src/video-record/entities/video-record.entity';
+import { TemporaryUser } from 'src/temporary-user/entities/temporary-user.entity';
 
 @Entity()
 export class User {
@@ -39,7 +41,7 @@ export class User {
   @Column()
   gender: string;
 
-  @Column({ type: Date})
+  @Column({ type: Date })
   birth_date: Date;
 
   @Column()
@@ -66,4 +68,10 @@ export class User {
     referencedColumnName: 'id'
   })
   updated_by: User;
+
+  @OneToMany(() => VideoRecord, (videoRecord) => videoRecord.user)
+  videos: VideoRecord[];
+
+  @OneToMany(() => TemporaryUser, temporaryUsers => temporaryUsers.user)
+  temporaryUsers!: TemporaryUser[];
 }

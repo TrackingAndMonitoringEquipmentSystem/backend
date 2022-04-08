@@ -10,7 +10,15 @@ import { SendGridModule } from '@anchan828/nest-sendgrid';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { SharedModule } from './shared/shared.module';
 import { DepartmentModule } from './department/department.module';
+import { LockersModule } from './lockers/lockers.module';
+import { LocationModule } from './location/location.module';
+import { VideoRecordModule } from './video-record/video-record.module';
 import * as FirebaseServiceAccount from './config/firebase.config.json';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesAndLockerGuard } from './utils/guard/rolesAndLocker.guard';
+import { TemporaryUserModule } from './temporary-user/temporary-user.module';
+import { TemporaryDeptModule } from './temporary-dept/temporary-dept.module';
+import { CameraModule } from './camera/camera.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -40,8 +48,14 @@ import * as FirebaseServiceAccount from './config/firebase.config.json';
     AuthenticationModule,
     SharedModule,
     DepartmentModule,
+    LockersModule,
+    LocationModule,
+    VideoRecordModule,
+    TemporaryUserModule,
+    TemporaryDeptModule,
+    CameraModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
