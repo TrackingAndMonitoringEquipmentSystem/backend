@@ -27,12 +27,10 @@ export class LockersController {
   viewAll() {
     return this.lockersService.findAll();
   }
-
-  @UseGuards(RolesAndDeptGuard)  
-  @Roles('super_admin', 'admin')
+  
   @Post('preRegister')
-  preRegister(@Request() req) {
-    return this.lockersService.preRegis(req.actor);
+  preRegister() {
+    return this.lockersService.preRegis();
   }
   
 

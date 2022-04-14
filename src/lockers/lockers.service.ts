@@ -56,15 +56,11 @@ export class LockersService {
     throw new HttpException(getResponse('09', null), HttpStatus.FORBIDDEN); 
   }
 
-  async preRegis(actor) {
-    let user = await this.userService.findByEmail(actor.email);
+  async preRegis() {
     let locker =  this.lockerRepository.create({
-      status: 'unregister',
-      created_by: user,
-      updated_by: user,
-      description: null,
-      locker_name: null,
-      location: null,
+      status:'unregister',
+      created_by: {id:1},
+      updated_by: {id:1},
     });
     await this.lockerRepository.save(locker);
     return getResponse('00', locker);
