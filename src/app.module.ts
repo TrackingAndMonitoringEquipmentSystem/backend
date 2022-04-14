@@ -1,3 +1,4 @@
+import { PublicModule } from './public/public.module';
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -54,6 +55,7 @@ import { CameraModule } from './camera/camera.module';
     TemporaryUserModule,
     TemporaryDeptModule,
     CameraModule,
+    PublicModule,
   ],
   controllers: [AppController],
   providers: [AppService],

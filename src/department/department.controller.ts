@@ -4,18 +4,17 @@ import { Roles } from 'src/utils/guard/roles.decorator';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
-import { RolesAndLockerGuard } from 'src/utils/guard/rolesAndLocker.guard'; 
+import { RolesAndLockerGuard } from 'src/utils/guard/rolesAndLocker.guard';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
 
-@UseGuards(RolesAndDeptGuard)
 @Controller('department')
 export class DepartmentController {
-  constructor(private readonly departmentService: DepartmentService) {}
+  constructor(private readonly departmentService: DepartmentService) { }
 
   @Roles('super_admin')
   @Post('/createDepartment')
-  create(@Request() req , @Body() createDepartmentDto: CreateDepartmentDto) {
-    return this.departmentService.create(createDepartmentDto, req.actorId );
+  create(@Request() req, @Body() createDepartmentDto: CreateDepartmentDto) {
+    return this.departmentService.create(createDepartmentDto, req.actorId);
   }
 
   @Roles('super_admin')
