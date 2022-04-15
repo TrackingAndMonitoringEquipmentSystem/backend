@@ -15,7 +15,9 @@ import { UpdateLockerDto } from './dto/update-locker.dto';
 import { RolesAndLockerGuard } from 'src/utils/guard/rolesAndLocker.guard';
 import { Roles } from 'src/utils/guard/roles.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('lockers')
 @Controller('lockers')
 export class LockersController {
   constructor(private readonly lockersService: LockersService) {}

@@ -13,7 +13,9 @@ import { CreateTemporaryDeptDto } from './dto/create-temporary-dept.dto';
 import { UpdateTemporaryDeptDto } from './dto/update-temporary-dept.dto';
 import { RolesAndLockerGuard } from 'src/utils/guard/rolesAndLocker.guard';
 import { Roles } from 'src/utils/guard/roles.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('temp-dept')
 @UseGuards(RolesAndLockerGuard)
 @Controller('lockers/temp-dept')
 export class TemporaryDeptController {

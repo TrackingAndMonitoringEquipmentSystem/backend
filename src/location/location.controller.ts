@@ -13,7 +13,9 @@ import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { Roles } from 'src/utils/guard/roles.decorator';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('location')
 @Controller('location')
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}

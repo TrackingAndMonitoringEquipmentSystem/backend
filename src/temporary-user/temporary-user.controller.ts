@@ -13,7 +13,9 @@ import { CreateTemporaryUserDto } from './dto/create-temporary-user.dto';
 import { UpdateTemporaryUserDto } from './dto/update-temporary-user.dto';
 import { RolesAndLockerGuard } from 'src/utils/guard/rolesAndLocker.guard';
 import { Roles } from 'src/utils/guard/roles.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('temp-user')
 @UseGuards(RolesAndLockerGuard)
 @Controller('lockers/temp-user')
 export class TemporaryUserController {

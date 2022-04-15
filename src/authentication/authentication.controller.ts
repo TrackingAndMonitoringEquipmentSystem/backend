@@ -8,11 +8,13 @@ import {
   Body,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { AuthenticationService } from './authentication.service';
 import { FirebaseAuthGuard } from './authenttication.guard';
 
+@ApiTags('authen')
 @Controller('authen')
 export class AuthenticationController {
   constructor(
