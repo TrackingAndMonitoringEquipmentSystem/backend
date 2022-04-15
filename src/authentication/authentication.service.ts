@@ -4,8 +4,6 @@ import { SendGridService } from '@anchan828/nest-sendgrid';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { getResponse } from 'src/utils/response';
 import * as admin from 'firebase-admin';
-import { Role } from 'src/users/entities/role.entity';
-import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthenticationService {
@@ -32,18 +30,6 @@ export class AuthenticationService {
       await admin.auth().setCustomUserClaims(user['uid'], {
         role: userRole,
       });
-      const re = await admin.auth().getUser(user['uid']);
-      await this.usersService.updateUser(
-        result.id,
-        {
-          status: 'Signingin',
-          fcm_token: fcm_token,
-        },
-        result.id,
-      );
-      result = await this.usersService.findById(result.id);
-      throw new HttpException(getResponse('00', result), HttpStatus.OK);
-    } else if (result.status == 'SignedOut') {
       await this.usersService.updateUser(
         result.id,
         {
@@ -54,8 +40,20 @@ export class AuthenticationService {
       );
       result = await this.usersService.findById(result.id);
       return getResponse('00', result);
-    } else
+    } else if (result.status == 'SignedOut' || result.status == 'Signingin') {
+      await this.usersService.updateUser(
+        result.id,
+        {
+          status: 'Signingin',
+          fcm_token: fcm_token,
+        },
+        result.id,
+      );
+      result = await this.usersService.findById(result.id);
+      return getResponse('00', result);
+    } else {
       throw new HttpException(getResponse('04', null), HttpStatus.FORBIDDEN);
+    }
   }
 
   async register(userDto: CreateUserDto): Promise<any> {
