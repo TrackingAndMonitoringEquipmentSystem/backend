@@ -1,5 +1,13 @@
 import { SendGridService } from '@anchan828/nest-sendgrid';
-import { Controller, Get, Put, UseGuards,Request, Body, Post} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  UseGuards,
+  Request,
+  Body,
+  Post,
+} from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { AuthenticationService } from './authentication.service';
@@ -9,12 +17,12 @@ import { FirebaseAuthGuard } from './authenttication.guard';
 export class AuthenticationController {
   constructor(
     private readonly sendGrid: SendGridService,
-    private service: AuthenticationService
-    ){}
+    private service: AuthenticationService,
+  ) {}
   @UseGuards(FirebaseAuthGuard)
-  @Get('/signin')
+  @Post('/signin')
   signIn(@Request() req, @Body() userDto: UpdateUserDto): Promise<any> {
-    return this.service.signIn(req.user,userDto.fcm_token);
+    return this.service.signIn(req.user, userDto.fcm_token);
   }
 
   @UseGuards(FirebaseAuthGuard)
@@ -28,8 +36,6 @@ export class AuthenticationController {
   signout(@Request() req): Promise<any> {
     return this.service.signOut(req.user.email);
   }
-
-
 
   @Put('send-mail')
   async sendMail(): Promise<any> {
@@ -45,7 +51,7 @@ export class AuthenticationController {
 
   @UseGuards(FirebaseAuthGuard)
   @Get('/send-noti')
-  sendNoti(): Promise<any>{
+  sendNoti(): Promise<any> {
     return this.service.sendNoti();
   }
 }

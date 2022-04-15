@@ -15,8 +15,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private readonly sendGrid: SendGridService
-  ) { }
+    private readonly sendGrid: SendGridService,
+  ) {}
 
   findAll(): Promise<User[]> {
     return this.usersRepository.find();
@@ -25,9 +25,9 @@ export class UsersService {
   findById(id: number): Promise<User> {
     return this.usersRepository.findOne({
       where: {
-        id
+        id,
       },
-      relations: ['role', 'dept']
+      relations: ['role', 'dept'],
     });
   }
 
@@ -35,10 +35,10 @@ export class UsersService {
     var idsToNumber = ids.split(',').map(Number);
     const users = await this.usersRepository.find({
       where: {
-        id: In(idsToNumber)
+        id: In(idsToNumber),
       },
-      relations: ['role', 'dept','updated_by']
-    })
+      relations: ['role', 'dept', 'updated_by'],
+    });
     return getResponse('00', users);
   }
 
@@ -47,7 +47,7 @@ export class UsersService {
       where: {
         email,
       },
-      relations: ['role', 'dept']
+      relations: ['role', 'dept'],
     });
     return user;
   }
@@ -62,7 +62,7 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     const user = this.usersRepository.create(createUserDto);
-    throw this.usersRepository.save(user);
+    return this.usersRepository.save(user);
   }
 
   async createByAdmin(createByAdmin: CreateByAdmin, actorId) {
@@ -72,7 +72,7 @@ export class UsersService {
         status: 'Approved',
         role: createByAdmin.role,
         dept: createByAdmin.dept,
-        updated_by: actorId
+        updated_by: actorId,
       });
       await this.usersRepository.save(user);
     }
@@ -80,7 +80,11 @@ export class UsersService {
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto, actorId) {
-    await this.usersRepository.save({ ...updateUserDto, id: Number(id), updated_by: actorId });
+    await this.usersRepository.save({
+      ...updateUserDto,
+      id: Number(id),
+      updated_by: actorId,
+    });
     const result = await this.usersRepository.findOne(id);
     return getResponse('00', result);
   }
@@ -90,21 +94,22 @@ export class UsersService {
       where: { id },
       relations: ['role'],
     });
-    return (result.role.role);
+    return result.role.role;
   }
 
-  async findByRole(role: string[], dept_id: number) {
+  async findByRole(role: string[], dept_id: number, status?: any) {
     const result = await this.usersRepository.find({
       relations: ['role', 'dept'],
       where: {
         role: {
-          role: In(role)
+          role: In(role),
         },
         dept: {
-          id: dept_id
-        }
-      }
-    })
+          id: dept_id,
+        },
+        ...status,
+      },
+    });
     return result;
   }
 
@@ -116,17 +121,15 @@ export class UsersService {
     if (user.status == 'WaitingForApprove') {
       this.usersRepository.update(id, {
         status: 'Approved',
-        updated_by: actorId
+        updated_by: actorId,
       });
       this.sendNotiToOne(user.fcm_token);
       this.sendMail(user.email);
       return getResponse('00', null);
-    }
-    else {
+    } else {
       throw new HttpException(getResponse('05', null), HttpStatus.FORBIDDEN);
     }
   }
-
 
   async sendMail(email: string): Promise<any> {
     const result = await this.sendGrid.send({
@@ -143,11 +146,13 @@ export class UsersService {
     const message = {
       notification: {
         title: 'Your account has been approved',
-        body: '12345'
+        body: '12345',
       },
-      token: token
+      token: token,
     };
-    admin.messaging().send(message)
+    admin
+      .messaging()
+      .send(message)
       .then((response) => {
         console.log('Successfully sent message:', response);
       })
@@ -163,11 +168,10 @@ export class UsersService {
     });
     if (user.status == 'Blocked') {
       throw new HttpException(getResponse('07', null), HttpStatus.FORBIDDEN);
-    }
-    else {
+    } else {
       this.usersRepository.update(id, {
         status: 'Blocked',
-        updated_by: actorId
+        updated_by: actorId,
       });
       return getResponse('00', null);
     }
@@ -181,11 +185,10 @@ export class UsersService {
     if (user.status == 'Blocked') {
       this.usersRepository.update(id, {
         status: 'SignedOut',
-        updated_by: actorId
+        updated_by: actorId,
       });
       return getResponse('00', null);
-    }
-    else {
+    } else {
       throw new HttpException(getResponse('06', null), HttpStatus.FORBIDDEN);
     }
   }
@@ -193,9 +196,10 @@ export class UsersService {
   async findByfaceid(filename: string) {
     let result = await this.usersRepository.findOne({
       where: {
-        face_id: filename
-      }, relations: ['dept']
-    })
+        face_id: filename,
+      },
+      relations: ['dept'],
+    });
     return result;
   }
 }

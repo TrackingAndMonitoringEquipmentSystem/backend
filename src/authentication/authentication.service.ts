@@ -4,6 +4,8 @@ import { SendGridService } from '@anchan828/nest-sendgrid';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { getResponse } from 'src/utils/response';
 import * as admin from 'firebase-admin';
+import { Role } from 'src/users/entities/role.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthenticationService {
@@ -17,11 +19,11 @@ export class AuthenticationService {
     return true;
   }
 
-  async signIn(user: object, fcm_token: string): Promise<any> {
+  async signIn(user: any, fcm_token: string): Promise<any> {
     if (!user['email_verified']) {
       throw new HttpException(getResponse('02', null), HttpStatus.FORBIDDEN);
     }
-    var result = await this.usersService.findByEmail(user['email']);
+    let result = await this.usersService.findByEmail(user['email']);
     if (!result) {
       throw new HttpException(getResponse('03', null), HttpStatus.FORBIDDEN);
     }
@@ -31,20 +33,24 @@ export class AuthenticationService {
         role: userRole,
       });
       const re = await admin.auth().getUser(user['uid']);
-      await this.usersService.updateUser(result.id, {
-        status: 'Signingin',
-        fcm_token: fcm_token,
-      },
-      result.id
+      await this.usersService.updateUser(
+        result.id,
+        {
+          status: 'Signingin',
+          fcm_token: fcm_token,
+        },
+        result.id,
       );
       result = await this.usersService.findById(result.id);
       throw new HttpException(getResponse('00', result), HttpStatus.OK);
     } else if (result.status == 'SignedOut') {
-      await this.usersService.updateUser(result.id, {
-        status: 'Signingin',
-        fcm_token: fcm_token,
-      },
-      result.id
+      await this.usersService.updateUser(
+        result.id,
+        {
+          status: 'Signingin',
+          fcm_token: fcm_token,
+        },
+        result.id,
       );
       result = await this.usersService.findById(result.id);
       return getResponse('00', result);
@@ -53,7 +59,7 @@ export class AuthenticationService {
   }
 
   async register(userDto: CreateUserDto): Promise<any> {
-    var result = await this.usersService.findByEmail(userDto.email);
+    let result = await this.usersService.findByEmail(userDto.email);
     console.log(result);
     if (result) {
       if (result.status == 'Approved') {
@@ -65,16 +71,14 @@ export class AuthenticationService {
       /* else {
         return getResponse('01',null);}*/
     } else {
+      userDto.status = 'WaitingForValidateEmail';
       const user = await this.usersService.createUser(userDto);
-      this.usersService.updateUser(user.id, {
-        status: 'WaitingForValidateEmail',
-      },
-      user.id
-      );
-      result = await this.usersService.findById(user.id);
       const getAdmin = await this.usersService.findByRole(
         ['super_admin', 'admin'],
-        result.dept.id,
+        user.dept.id,
+        {
+          status: 'Signingin',
+        },
       );
       console.log('admin', getAdmin);
       const tokens = getAdmin.map((token) => token.fcm_token);
@@ -95,17 +99,19 @@ export class AuthenticationService {
         .catch((error) => {
           console.log('Error sending message:', error);
         });
-     return getResponse('00', user);
+      return getResponse('00', user);
     }
   }
 
   async signOut(email: string): Promise<any> {
     const result = await this.usersService.findByEmail(email);
-    await this.usersService.updateUser(result.id, {
-      status: 'SignedOut',
-      fcm_token: null,
-    },
-    result.id
+    await this.usersService.updateUser(
+      result.id,
+      {
+        status: 'SignedOut',
+        fcm_token: null,
+      },
+      result.id,
     );
     return getResponse('00', null);
   }
