@@ -15,8 +15,6 @@ import { LockersModule } from './lockers/lockers.module';
 import { LocationModule } from './location/location.module';
 import { VideoRecordModule } from './video-record/video-record.module';
 import * as FirebaseServiceAccount from './config/firebase.config.json';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesAndLockerGuard } from './utils/guard/rolesAndLocker.guard';
 import { TemporaryUserModule } from './temporary-user/temporary-user.module';
 import { TemporaryDeptModule } from './temporary-dept/temporary-dept.module';
 import { CameraModule } from './camera/camera.module';
@@ -60,4 +58,4 @@ import { CameraModule } from './camera/camera.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

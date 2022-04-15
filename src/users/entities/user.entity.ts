@@ -60,7 +60,7 @@ export class User {
   @ManyToOne(() => Department, (dept) => dept.users)
   dept: Department;
 
-  @ManyToOne((type) => User)
+  @ManyToOne(() => User)
   @JoinColumn({
     name: 'updated_by',
     referencedColumnName: 'id',

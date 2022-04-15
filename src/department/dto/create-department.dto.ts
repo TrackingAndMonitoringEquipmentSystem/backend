@@ -1,8 +1,6 @@
-import { IsNotEmpty } from "class-validator";
-
+import { IsNotEmpty } from 'class-validator';
 
 export class CreateDepartmentDto {
-    @IsNotEmpty()
-    dept_name: string;
-
+  @IsNotEmpty()
+  dept_name: string;
 }

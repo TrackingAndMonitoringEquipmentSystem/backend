@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Options } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In } from 'typeorm';
 import { Repository } from 'typeorm';
@@ -32,7 +32,7 @@ export class UsersService {
   }
 
   async viewUser(ids: string) {
-    var idsToNumber = ids.split(',').map(Number);
+    const idsToNumber = ids.split(',').map(Number);
     const users = await this.usersRepository.find({
       where: {
         id: In(idsToNumber),
@@ -90,7 +90,7 @@ export class UsersService {
   }
 
   async findRole(id: number) {
-    let result = await this.usersRepository.findOne({
+    const result = await this.usersRepository.findOne({
       where: { id },
       relations: ['role'],
     });
@@ -194,7 +194,7 @@ export class UsersService {
   }
 
   async findByfaceid(filename: string) {
-    let result = await this.usersRepository.findOne({
+    const result = await this.usersRepository.findOne({
       where: {
         face_id: filename,
       },

@@ -1,4 +1,10 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DepartmentService } from 'src/department/department.service';
 import { LockersService } from 'src/lockers/lockers.service';
@@ -16,93 +22,106 @@ export class TemporaryDeptService {
     @Inject(forwardRef(() => LockersService))
     private readonly lockerService: LockersService,
     private readonly departmentService: DepartmentService,
-  ) { }
+  ) {}
 
   async create(locker: any, createTemporaryDeptDto: CreateTemporaryDeptDto) {
-    let lockerInfo = await this.lockerService.findLocker(locker);
-    let dept = await this.departmentService.findOne(createTemporaryDeptDto.department);
+    const lockerInfo = await this.lockerService.findLocker(locker);
+    const dept = await this.departmentService.findOne(
+      createTemporaryDeptDto.department,
+    );
     if (dept) {
-      let lockerDept = await this.lockerService.findDept(lockerInfo.locker_id);
+      const lockerDept = await this.lockerService.findDept(
+        lockerInfo.locker_id,
+      );
       for (let i = 0; i < lockerDept.length; i++) {
         if (lockerDept[i].id == Number(createTemporaryDeptDto.department)) {
-          throw new HttpException(getResponse('14', null), HttpStatus.FORBIDDEN);
+          throw new HttpException(
+            getResponse('14', null),
+            HttpStatus.FORBIDDEN,
+          );
         }
       }
-      let tempDept = this.tempDeptRepository.create({
-      start_date: createTemporaryDeptDto.start_date,
+      const tempDept = this.tempDeptRepository.create({
+        start_date: createTemporaryDeptDto.start_date,
         end_date: createTemporaryDeptDto.end_date,
-          department: dept,
-            locker: lockerInfo
-    });
-    await this.tempDeptRepository.save(tempDept);
-    return getResponse('00', null);
-  }
+        department: dept,
+        locker: lockerInfo,
+      });
+      await this.tempDeptRepository.save(tempDept);
+      return getResponse('00', null);
+    }
     throw new HttpException(getResponse('15', null), HttpStatus.FORBIDDEN);
   }
 
   async findAll(lockerId: number) {
-  let result = await this.tempDeptRepository.find({
-    where: {
-      locker: lockerId
-    },
-    relations: ['locker', 'department']
-  });
-  return getResponse('00', result);
-}
+    const result = await this.tempDeptRepository.find({
+      where: {
+        locker: lockerId,
+      },
+      relations: ['locker', 'department'],
+    });
+    return getResponse('00', result);
+  }
 
   async findOne(lockerId: number, deptId: number) {
-  let result = await this.tempDeptRepository.findOne({
-    relations: ['locker', 'department'],
-    where: {
-      locker: lockerId,
-      department: deptId,
+    const result = await this.tempDeptRepository.findOne({
+      relations: ['locker', 'department'],
+      where: {
+        locker: lockerId,
+        department: deptId,
+      },
+    });
+    if (result) {
+      return getResponse('00', result);
     }
-  });
-  if (result) {
-    return getResponse('00', result);
-  };
 
-  throw new HttpException(getResponse('16', null), HttpStatus.FORBIDDEN);
-
-}
-
-  async update(lockerId: number, deptId: number, updateTemporaryDeptDto: UpdateTemporaryDeptDto) {
-  let lockerInfo = await this.lockerService.findLocker(lockerId);
-  let dept = await this.departmentService.findOne(deptId);
-  if (lockerInfo && dept) {
-    await this.tempDeptRepository.update({ locker: lockerInfo, department: dept }, { ...updateTemporaryDeptDto })
-    return this.findOne(lockerId, deptId);
+    throw new HttpException(getResponse('16', null), HttpStatus.FORBIDDEN);
   }
 
-  throw new HttpException(getResponse('16', null), HttpStatus.FORBIDDEN);
-}
+  async update(
+    lockerId: number,
+    deptId: number,
+    updateTemporaryDeptDto: UpdateTemporaryDeptDto,
+  ) {
+    const lockerInfo = await this.lockerService.findLocker(lockerId);
+    const dept = await this.departmentService.findOne(deptId);
+    if (lockerInfo && dept) {
+      await this.tempDeptRepository.update(
+        { locker: lockerInfo, department: dept },
+        { ...updateTemporaryDeptDto },
+      );
+      return this.findOne(lockerId, deptId);
+    }
+
+    throw new HttpException(getResponse('16', null), HttpStatus.FORBIDDEN);
+  }
 
   async remove(lockerId: number, deptId: number) {
-  let result = await this.tempDeptRepository.findOne({
-    relations: ['locker', 'department'],
-    where: {
-      locker: lockerId,
-      department: deptId,
+    const result = await this.tempDeptRepository.findOne({
+      relations: ['locker', 'department'],
+      where: {
+        locker: lockerId,
+        department: deptId,
+      },
+    });
+    if (result) {
+      await this.tempDeptRepository.remove(result);
+      return getResponse('00', null);
     }
-  });
-  if (result) {
-    await this.tempDeptRepository.remove(result);
-    return getResponse('00', null);
+    throw new HttpException(getResponse('16', null), HttpStatus.FORBIDDEN);
   }
-  throw new HttpException(getResponse('16', null), HttpStatus.FORBIDDEN);
-}
 
   async findTempDept(lockerId: string, deptId: number) {
-  const date = new Date();
-  let result = await this.tempDeptRepository.findOne({
-    relations: ['locker', 'department'],
-    where: {
-      locker: lockerId,
-      department: deptId,
-      start_date: LessThanOrEqual(date),
-      end_date: MoreThanOrEqual(date),
-    }
-  });
-  return result;
-}
+    const date = new Date();
+    const result = await this.tempDeptRepository.findOne({
+      relations: ['locker', 'department'],
+      where: {
+        locker: lockerId,
+        department: deptId,
+        start_date: LessThanOrEqual(date),
+        end_date: MoreThanOrEqual(date),
+      },
+    });
+    return result;
+  }
 }

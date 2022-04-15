@@ -12,11 +12,6 @@ export class AuthenticationService {
     private readonly sendGrid: SendGridService,
   ) {}
 
-  validateUser(username: string, pass: string): boolean {
-    console.log('validateUser');
-    return true;
-  }
-
   async signIn(user: any, fcm_token: string): Promise<any> {
     if (!user['email_verified']) {
       throw new HttpException(getResponse('02', null), HttpStatus.FORBIDDEN);

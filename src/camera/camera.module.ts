@@ -10,6 +10,6 @@ import { UsersModule } from 'src/users/users.module';
   imports: [TypeOrmModule.forFeature([Camera]), LockersModule, UsersModule],
   controllers: [CameraController],
   providers: [CameraService],
-  exports: [CameraService]
+  exports: [CameraService],
 })
 export class CameraModule {}

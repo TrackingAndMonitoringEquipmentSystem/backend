@@ -1,7 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt } from 'passport-jwt';
-import { FirebaseAuthStrategy, FirebaseUser } from '@tfarras/nestjs-firebase-auth';
+import {
+  FirebaseAuthStrategy,
+  FirebaseUser,
+} from '@tfarras/nestjs-firebase-auth';
 import {
   FirebaseAdminSDK,
   FIREBASE_ADMIN_INJECT,

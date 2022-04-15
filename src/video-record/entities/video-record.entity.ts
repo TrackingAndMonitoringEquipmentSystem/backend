@@ -1,27 +1,33 @@
-import { Locker } from "src/lockers/entities/locker.entity";
-import { User } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, Timestamp } from "typeorm";
+import { Locker } from 'src/lockers/entities/locker.entity';
+import { User } from 'src/users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class VideoRecord {
-    @PrimaryGeneratedColumn()
-    file_id: Number;
+  @PrimaryGeneratedColumn()
+  file_id: number;
 
-    @Column()
-    file_name: string;
+  @Column()
+  file_name: string;
 
-    @Column()
-    action: string;
+  @Column()
+  action: string;
 
-    @Column()
-    open_time: Date;
+  @Column()
+  open_time: Date;
 
-    @CreateDateColumn()
-    recorded_at: Date;
+  @CreateDateColumn()
+  recorded_at: Date;
 
-    @ManyToOne(() => Locker, locker => locker.videos)
-    locker: Locker;
+  @ManyToOne(() => Locker, (locker) => locker.videos)
+  locker: Locker;
 
-    @ManyToOne(() => User, user => user.videos)
-    user: User;
+  @ManyToOne(() => User, (user) => user.videos)
+  user: User;
 }

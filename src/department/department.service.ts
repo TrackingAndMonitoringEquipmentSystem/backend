@@ -1,6 +1,5 @@
-import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { throws } from 'assert';
 import { UsersService } from 'src/users/users.service';
 import { getResponse } from 'src/utils/response';
 import { In, Repository } from 'typeorm';
@@ -13,16 +12,15 @@ export class DepartmentService {
   constructor(
     @InjectRepository(Department)
     private deptRepository: Repository<Department>,
-    private readonly userService: UsersService
-  ) { }
+    private readonly userService: UsersService,
+  ) {}
 
   async create(createDepartmentDto: CreateDepartmentDto, actorId) {
-    //let user = await this.userService.findByEmail(actor.email);
-    const dept = await this.deptRepository.create({
+    const dept = this.deptRepository.create({
       dept_name: createDepartmentDto.dept_name,
       created_by: actorId,
       updated_by: actorId,
-    })
+    });
     const result = await this.deptRepository.save(dept);
     return getResponse('00', result);
   }
@@ -40,8 +38,8 @@ export class DepartmentService {
       where: {
         id: In(convertIdsToNum),
       },
-      relations: ['created_by', 'updated_by']
-    })
+      relations: ['created_by', 'updated_by'],
+    });
     return getResponse('00', result);
   }
 
@@ -50,11 +48,10 @@ export class DepartmentService {
     const result = await this.deptRepository.find({
       where: {
         id: In(ids),
-      }
-    })
+      },
+    });
     return result;
   }
-
 
   async update(id: string, updateDepartmentDto: UpdateDepartmentDto, actorId) {
     //console.log('actor', actor.email);
@@ -62,8 +59,8 @@ export class DepartmentService {
     const result = await this.deptRepository.save({
       dept_name: updateDepartmentDto.dept_name,
       id: Number(id),
-      updated_by: actorId
-    })
+      updated_by: actorId,
+    });
     return getResponse('00', result);
   }
 
@@ -72,12 +69,12 @@ export class DepartmentService {
     return getResponse('00', null);
   }
 
-  async findOne(id: number | Department){
-    let result = await this.deptRepository.findOne({
+  async findOne(id: number | Department) {
+    const result = await this.deptRepository.findOne({
       where: {
-        id: id
-      }
-    })
+        id: id,
+      },
+    });
     return result;
   }
 }

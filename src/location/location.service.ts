@@ -1,5 +1,4 @@
-import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getResponse } from 'src/utils/response';
 import { Repository } from 'typeorm';
@@ -12,25 +11,24 @@ export class LocationService {
   constructor(
     @InjectRepository(Location)
     private locationRepository: Repository<Location>,
-  ) { }
+  ) {}
   create(createLocationDto: CreateLocationDto) {
-    let result = this.getLocation(createLocationDto);
+    const result = this.getLocation(createLocationDto);
     if (result == null) {
       this.locationRepository.save(createLocationDto);
       return getResponse('00', null);
-    }
-    else {
+    } else {
       throw new HttpException(getResponse('08', null), HttpStatus.FORBIDDEN);
     }
   }
 
   async findAll() {
-    let result = await this.locationRepository.find();
+    const result = await this.locationRepository.find();
     return getResponse('00', result);
   }
 
   async findOne(id: number) {
-    let result = await this.locationRepository.findOne(id);
+    const result = await this.locationRepository.findOne(id);
     return getResponse('00', result);
   }
 
@@ -45,17 +43,17 @@ export class LocationService {
   }
 
   async getLocation(location: CreateLocationDto) {
-    let result = await this.locationRepository.findOne({
-      where: location
-    })
+    const result = await this.locationRepository.findOne({
+      where: location,
+    });
     console.log('ggg ', result == null);
-    return (result);
+    return result;
   }
 
   async findlocation(locate: Location) {
-    let result = await this.locationRepository.findOne({
-      where: locate
-    })
+    const result = await this.locationRepository.findOne({
+      where: locate,
+    });
     console.log('test', result);
     return result;
   }

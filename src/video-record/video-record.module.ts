@@ -8,6 +8,6 @@ import { LockersModule } from 'src/lockers/lockers.module';
 @Module({
   imports: [TypeOrmModule.forFeature([VideoRecord]), LockersModule],
   controllers: [VideoRecordController],
-  providers: [VideoRecordService]
+  providers: [VideoRecordService],
 })
 export class VideoRecordModule {}

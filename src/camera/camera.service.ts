@@ -15,53 +15,57 @@ export class CameraService {
     private readonly lockersService: LockersService,
   ) {}
   async create(createCameraDto: CreateCameraDto) {
-    let lockerInfo = await this.lockersService.findLocker(createCameraDto.locker);
+    const lockerInfo = await this.lockersService.findLocker(
+      createCameraDto.locker,
+    );
     console.log('locker', lockerInfo);
-    let camera = await this.cameraRepository.create({
+    const camera = await this.cameraRepository.create({
       ...createCameraDto,
       locker: lockerInfo,
-    }) 
+    });
     this.cameraRepository.save(camera);
     return getResponse('00', null);
   }
 
   async findAll() {
-    let result = await this.cameraRepository.find({
-      relations: ['locker']
+    const result = await this.cameraRepository.find({
+      relations: ['locker'],
     });
     return getResponse('00', result);
   }
 
   async findOne(locker: number, camera: number) {
-    let result = await this.cameraRepository.findOne({
+    const result = await this.cameraRepository.findOne({
       relations: ['locker'],
       where: {
         camera_id: camera,
-        locker: locker
-      }
-    })
+        locker: locker,
+      },
+    });
     if (result) {
-      return getResponse('00', result) ;
-    } 
-    
+      return getResponse('00', result);
+    }
+
     throw new HttpException(getResponse('13', null), HttpStatus.FORBIDDEN);
-    
-    
   }
 
-  update(locker: number, camera: number, updateCameraDto: UpdateCameraDto) {  //ไปดูว่าต้องใช้วิธีไหน
+  update(locker: number, camera: number, updateCameraDto: UpdateCameraDto) {
+    //ไปดูว่าต้องใช้วิธีไหน
+    console.log(
+      `locker: ${locker}, camera: ${camera}, updateCameraDto: ${updateCameraDto}`,
+    );
     return `This action updates a  camera`;
   }
 
   async remove(locker: number, camera: number) {
-    let result = await this.cameraRepository.findOne({
+    const result = await this.cameraRepository.findOne({
       relations: ['locker'],
       where: {
         camera_id: camera,
-        locker: locker
-      }
-    }) 
-    if(result == null) {
+        locker: locker,
+      },
+    });
+    if (result == null) {
       throw new HttpException(getResponse('13', null), HttpStatus.FORBIDDEN);
     }
     this.cameraRepository.remove(result);

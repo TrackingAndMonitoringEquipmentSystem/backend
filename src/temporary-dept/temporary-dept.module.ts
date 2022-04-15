@@ -9,9 +9,15 @@ import { UsersModule } from 'src/users/users.module';
 import { TemporaryUserModule } from 'src/temporary-user/temporary-user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TemporaryDept]), forwardRef(() => LockersModule), DepartmentModule, UsersModule, forwardRef(() => TemporaryUserModule)],
+  imports: [
+    TypeOrmModule.forFeature([TemporaryDept]),
+    forwardRef(() => LockersModule),
+    DepartmentModule,
+    UsersModule,
+    forwardRef(() => TemporaryUserModule),
+  ],
   controllers: [TemporaryDeptController],
   providers: [TemporaryDeptService],
-  exports: [TemporaryDeptService]
+  exports: [TemporaryDeptService],
 })
 export class TemporaryDeptModule {}

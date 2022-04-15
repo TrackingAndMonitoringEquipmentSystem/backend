@@ -12,8 +12,6 @@ import { JwtStrategy } from './jwt.strategy';
 import { TemporaryDeptModule } from 'src/temporary-dept/temporary-dept.module';
 import { TemporaryUserModule } from 'src/temporary-user/temporary-user.module';
 
-
-
 @Module({
   imports: [
     TypeOrmModule.forFeature([Locker]),
@@ -24,11 +22,11 @@ import { TemporaryUserModule } from 'src/temporary-user/temporary-user.module';
     forwardRef(() => TemporaryDeptModule),
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' }
-    })
+      signOptions: { expiresIn: '60s' },
+    }),
   ],
   controllers: [LockersController],
-  providers: [LockersService, JwtStrategy,],
-  exports: [LockersService]
+  providers: [LockersService, JwtStrategy],
+  exports: [LockersService],
 })
-export class LockersModule { }
+export class LockersModule {}

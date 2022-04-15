@@ -1,16 +1,6 @@
-import {
-  IsDate,
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Length,
-  Matches,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, Matches } from 'class-validator';
 import { Department } from 'src/department/entities/department.entity';
-import { Timestamp } from 'typeorm';
 import { Role } from '../entities/role.entity';
-import { User } from '../entities/user.entity';
 
 export class CreateUserDto {
   @IsNotEmpty()

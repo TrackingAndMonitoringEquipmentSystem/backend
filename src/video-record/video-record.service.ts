@@ -1,4 +1,4 @@
-import { HttpException, HttpService, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LockersService } from 'src/lockers/lockers.service';
 import { getResponse } from 'src/utils/response';
@@ -13,28 +13,28 @@ export class VideoRecordService {
     @InjectRepository(VideoRecord)
     private videoRepository: Repository<VideoRecord>,
     private readonly lockersService: LockersService,
-  ) { }
+  ) {}
   async create(lockerId: number, createVideoRecordDto: CreateVideoRecordDto) {
-    let locker = await this.lockersService.findLocker(lockerId);
-    let video = this.videoRepository.create({
+    const locker = await this.lockersService.findLocker(lockerId);
+    const video = this.videoRepository.create({
       ...createVideoRecordDto,
-      locker: locker
+      locker: locker,
     });
-    await this.videoRepository.save(video)
+    await this.videoRepository.save(video);
     return getResponse('00', video);
   }
 
   async findAll() {
-    let result = await this.videoRepository.find(); 
+    const result = await this.videoRepository.find();
     return result;
   }
 
-  async findOne(lockerId: number, videoId: number ) {
-    let result = await this.videoRepository.findOne({
+  async findOne(lockerId: number, videoId: number) {
+    const result = await this.videoRepository.findOne({
       where: {
         locker: lockerId,
-        file_id: videoId
-      }
+        file_id: videoId,
+      },
     });
     if (result) {
       return getResponse('00', result);
@@ -42,26 +42,30 @@ export class VideoRecordService {
     throw new HttpException(getResponse('19', null), HttpStatus.FORBIDDEN);
   }
 
-  async update(lockerId: number, videoId: number, updateVideoRecordDto: UpdateVideoRecordDto) {
-    let locker = await this.lockersService.findLocker(lockerId);
-    let video = await this.videoRepository.save({
+  async update(
+    lockerId: number,
+    videoId: number,
+    updateVideoRecordDto: UpdateVideoRecordDto,
+  ) {
+    const locker = await this.lockersService.findLocker(lockerId);
+    await this.videoRepository.save({
       ...updateVideoRecordDto,
       locker: locker,
       file_id: videoId,
-    })
-    let result = await this.videoRepository.findOne(videoId);
-    if(result) {
+    });
+    const result = await this.videoRepository.findOne(videoId);
+    if (result) {
       return getResponse('00', result);
     }
-    throw new HttpException(getResponse('19', null),HttpStatus.FORBIDDEN);
+    throw new HttpException(getResponse('19', null), HttpStatus.FORBIDDEN);
   }
 
   async remove(lockerId: number, videoId: number) {
-    let result = await this.videoRepository.findOne({
+    const result = await this.videoRepository.findOne({
       where: {
         locker: lockerId,
-        file_id: videoId
-      }
+        file_id: videoId,
+      },
     });
     if (result) {
       await this.videoRepository.delete(result);
@@ -72,11 +76,11 @@ export class VideoRecordService {
   }
 
   async viewVideo(lockerId: number, videoId: number) {
-    let result = await this.videoRepository.findOne({
+    const result = await this.videoRepository.findOne({
       where: {
         locker: lockerId,
-        file_id: videoId
-      }
+        file_id: videoId,
+      },
     });
     return result.file_name;
   }
