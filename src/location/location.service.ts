@@ -1,17 +1,19 @@
 import { Building } from './entities/building.entity';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getResponse } from 'src/utils/response';
 import { Repository } from 'typeorm';
 import { CreateLocationDto } from './dto/create-location.dto';
-import { UpdateLocationDto } from './dto/update-location.dto';
 import { User } from 'src/users/entities/user.entity';
+import { Room } from './entities/room.entity';
 
 @Injectable()
 export class LocationService {
   constructor(
     @InjectRepository(Building)
     private buildingRepository: Repository<Building>,
+    @InjectRepository(Room)
+    private roomRepository: Repository<Room>,
   ) {}
   create(createLocationDto: CreateLocationDto, user: User) {
     console.log('->user:', user);
@@ -62,6 +64,11 @@ export class LocationService {
     const result = await this.buildingRepository.find({
       relations: ['floors', 'floors.rooms'],
     });
-    return result;
+    return getResponse('00', result);
+  }
+
+  async findRoomById(id: number) {
+    const result = await this.roomRepository.findOne(id);
+    return getResponse('00', result);
   }
 }

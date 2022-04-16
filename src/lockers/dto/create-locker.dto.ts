@@ -1,12 +1,11 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 import { Department } from 'src/department/entities/department.entity';
-import { Room } from 'src/location/entities/room.entity';
 
 export class CreateLockerDto {
   @IsNotEmpty()
   locker_name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   num_camera: number;
 
   @IsNotEmpty()
@@ -16,7 +15,7 @@ export class CreateLockerDto {
   deptId: Department[];
 
   @IsNotEmpty()
-  room: Room;
+  roomId: number;
 
   status: string;
 }

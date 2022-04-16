@@ -40,9 +40,9 @@ export class LockersController {
     return this.lockersService.findAll();
   }
 
-  @Post('preRegister')
-  preRegister() {
-    return this.lockersService.preRegis();
+  @Post('preRegister/:numCamera')
+  preRegister(@Param('numCamera') numCamera: number) {
+    return this.lockersService.preRegis(numCamera);
   }
 
   @UseGuards(RolesAndLockerGuard)

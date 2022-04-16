@@ -37,18 +37,18 @@ export class LockersService {
       },
     });
     if (findLocker && findLocker.status == 'unregister') {
-      // const location = await this.locationService.findlocation(
-      //   createLockerDto.location,
-      // );
+      const room = await this.locationService.findRoomById(
+        createLockerDto.roomId,
+      );
       const dept = await this.departmentService.findDept(
         createLockerDto.deptId,
       );
       const user = await this.userService.findByEmail(actor.email);
-      if (location != null) {
+      if (room.successful) {
         await this.lockerRepository.save({
           locker_id: lockerId,
           ...createLockerDto,
-          location: location,
+          room: room.data,
           created_by: user,
           updated_by: user,
           department: dept,
@@ -63,11 +63,12 @@ export class LockersService {
     throw new HttpException(getResponse('09', null), HttpStatus.FORBIDDEN);
   }
 
-  async preRegis() {
+  async preRegis(numCamera: number) {
     const locker = this.lockerRepository.create({
       status: 'unregister',
       created_by: { id: 1 },
       updated_by: { id: 1 },
+      num_camera: numCamera,
     });
     await this.lockerRepository.save(locker);
     return getResponse('00', locker);
