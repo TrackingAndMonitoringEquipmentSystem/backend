@@ -1,3 +1,4 @@
+import { LockerGateway } from './locker.gateway';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LocationService } from 'src/location/location.service';
@@ -24,6 +25,7 @@ export class LockersService {
     private readonly tempUserService: TemporaryUserService,
     private readonly tempDeptService: TemporaryDeptService,
     private jwtService: JwtService,
+    private lockerGateway: LockerGateway,
   ) {}
 
   async register(
@@ -54,7 +56,10 @@ export class LockersService {
           department: dept,
           status: 'registered',
         });
-        const result = await this.lockerRepository.findOne(lockerId);
+        const result = await this.lockerRepository.findOne(lockerId, {
+          relations: ['room', 'room.floor', 'room.floor.building'],
+        });
+        this.lockerGateway.emitLocketUpdate(result);
         return getResponse('00', result);
       } else {
         throw new HttpException(getResponse('10', null), HttpStatus.FORBIDDEN);
@@ -152,7 +157,6 @@ export class LockersService {
       where: { locker_id: In(lockerIds) },
       relations: ['location', 'department'],
     });
-    console.log('test', result[0].department[0].id);
     return result;
   }
 

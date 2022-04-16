@@ -11,6 +11,7 @@ import { jwtConstants } from './JwtConstants';
 import { JwtStrategy } from './jwt.strategy';
 import { TemporaryDeptModule } from 'src/temporary-dept/temporary-dept.module';
 import { TemporaryUserModule } from 'src/temporary-user/temporary-user.module';
+import { LockerGateway } from './locker.gateway';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { TemporaryUserModule } from 'src/temporary-user/temporary-user.module';
     }),
   ],
   controllers: [LockersController],
-  providers: [LockersService, JwtStrategy],
+  providers: [LockersService, JwtStrategy, LockerGateway],
   exports: [LockersService],
 })
 export class LockersModule {}
