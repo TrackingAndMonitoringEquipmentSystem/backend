@@ -18,6 +18,7 @@ import * as FirebaseServiceAccount from './config/firebase.config.json';
 import { TemporaryUserModule } from './temporary-user/temporary-user.module';
 import { TemporaryDeptModule } from './temporary-dept/temporary-dept.module';
 import { CameraModule } from './camera/camera.module';
+import { FaceRecognitionModule } from './face-recognition/face-recognition.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -54,6 +55,7 @@ import { CameraModule } from './camera/camera.module';
     TemporaryDeptModule,
     CameraModule,
     PublicModule,
+    FaceRecognitionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
