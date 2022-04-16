@@ -33,8 +33,8 @@ export class LockersController {
     return this.lockersService.register(+locker, createLockerDto, req.actor);
   }
 
-  @UseGuards(RolesAndLockerGuard)
-  @Roles('super_admin')
+  // @UseGuards(RolesAndLockerGuard)
+  // @Roles('super_admin')
   @Get()
   viewAll() {
     return this.lockersService.findAll();
@@ -95,5 +95,10 @@ export class LockersController {
   @Get('openByFaceId/:locker')
   validateFaceid(@Body() data: any, @Param('locker') id: string) {
     return this.lockersService.validateFaceID(data, id);
+  }
+
+  @Get('lockersByDepartment/:departmentId')
+  getLockersByDepartment(@Param('departmentId') departmentId: number) {
+    return this.lockersService.getLockersByDepartment(departmentId);
   }
 }

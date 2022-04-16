@@ -1,5 +1,4 @@
 import { User } from 'src/users/entities/user.entity';
-import { Location } from 'src/location/entities/location.entity';
 import {
   Column,
   CreateDateColumn,
@@ -17,6 +16,7 @@ import { VideoRecord } from 'src/video-record/entities/video-record.entity';
 import { TemporaryUser } from 'src/temporary-user/entities/temporary-user.entity';
 import { TemporaryDept } from 'src/temporary-dept/entities/temporary-dept.entity';
 import { Camera } from 'src/camera/entities/camera.entity';
+import { Room } from 'src/location/entities/room.entity';
 
 @Entity()
 export class Locker {
@@ -35,8 +35,8 @@ export class Locker {
   @Column()
   status: string;
 
-  @ManyToOne(() => Location, (location) => location.lockers)
-  location: Location;
+  @ManyToOne(() => Room, (room) => room.lockers)
+  room: Room;
 
   @CreateDateColumn()
   created_at: Date;

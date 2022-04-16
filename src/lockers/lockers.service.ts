@@ -37,9 +37,9 @@ export class LockersService {
       },
     });
     if (findLocker && findLocker.status == 'unregister') {
-      const location = await this.locationService.findlocation(
-        createLockerDto.location,
-      );
+      // const location = await this.locationService.findlocation(
+      //   createLockerDto.location,
+      // );
       const dept = await this.departmentService.findDept(
         createLockerDto.deptId,
       );
@@ -74,7 +74,11 @@ export class LockersService {
   }
 
   async findAll() {
-    const result = await this.lockerRepository.find();
+    const result = await this.lockerRepository.find({
+      where: {
+        status: 'registered',
+      },
+    });
     return getResponse('00', result);
   }
 
@@ -166,6 +170,17 @@ export class LockersService {
       where: { locker_id: id },
       relations: ['department'],
     });
+    return result;
+  }
+
+  async getLockersByDepartment(departmentId: number): Promise<Locker[]> {
+    const result = await this.lockerRepository
+      .createQueryBuilder('locker')
+      .innerJoin('locker.department', 'department')
+      .where(`status = 'registered' AND department.id = :departmentId`, {
+        departmentId,
+      })
+      .getMany();
     return result;
   }
 }

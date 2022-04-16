@@ -1,12 +1,18 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateLocationDto {
-  @IsNotEmpty()
-  building: string;
+  @IsOptional()
+  buildingId: string;
+
+  @IsOptional()
+  buildingName: string;
+
+  @IsOptional()
+  floorId: string;
+
+  @IsOptional()
+  floorName: string;
 
   @IsNotEmpty()
-  floor: string;
-
-  @IsNotEmpty()
-  room: string;
+  roomName: string;
 }

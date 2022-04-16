@@ -17,7 +17,7 @@ export class RolesAndLockerGuard implements CanActivate {
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    console.log('role', roles);
+    console.log('roles:', roles);
     let user;
     let hasPermission = false;
     let deptIds: any[] = [];
@@ -32,7 +32,7 @@ export class RolesAndLockerGuard implements CanActivate {
       7,
       headerAuthorization.length,
     );
-    console.log(authToken);
+    // console.log(authToken);
     await admin
       .auth()
       .verifyIdToken(authToken)
@@ -56,7 +56,7 @@ export class RolesAndLockerGuard implements CanActivate {
           dept.push(lockerDept.department[i].id);
         }
         deptIds.push(dept);
-        console.log('lockerDept', deptIds);
+        // console.log('lockerDept', deptIds);
       }
     }
 
@@ -86,7 +86,7 @@ export class RolesAndLockerGuard implements CanActivate {
             break;
           }
         }
-        console.log('maintainer');
+        // console.log('maintainer');
       } else if (user.role == 'user') {
         for (let i = 0; i < deptIds.length; i++) {
           if (deptIds[i].includes(userInfo.dept.id)) {
@@ -112,7 +112,7 @@ export class RolesAndLockerGuard implements CanActivate {
       );
       if (tempUser || tempDept) {
         hasPermission = true;
-        console.log('temp');
+        // console.log('temp');
       }
     }
     request.actor = user;

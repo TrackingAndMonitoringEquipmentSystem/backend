@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 import { Department } from 'src/department/entities/department.entity';
-import { Location } from 'src/location/entities/location.entity';
+import { Room } from 'src/location/entities/room.entity';
 
 export class CreateLockerDto {
   @IsNotEmpty()
@@ -16,11 +16,7 @@ export class CreateLockerDto {
   deptId: Department[];
 
   @IsNotEmpty()
-  location: Location;
+  room: Room;
+
   status: string;
-  /*location: {
-        building: string;
-        floor: string;
-        room: string;
-    }*/
 }

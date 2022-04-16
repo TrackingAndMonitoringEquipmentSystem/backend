@@ -16,7 +16,6 @@ export class RolesAndDeptGuard implements CanActivate {
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    console.log('role', roles);
     let actor;
     let hasPermission = false;
     const request = context.switchToHttp().getRequest();
@@ -30,19 +29,14 @@ export class RolesAndDeptGuard implements CanActivate {
       headerAuthorization.length,
     );
     console.log(authToken);
-    await admin
-      .auth()
-      .verifyIdToken(authToken)
-      .then((decodedToken) => {
-        actor = decodedToken;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
+    try {
+      actor = await admin.auth().verifyIdToken(authToken);
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
     const id = request.params.id;
     const body = request.body;
-    console.log('actor', actor.email);
     const actorInfo = await this.usersService.findByEmail(actor.email);
     if (roles.includes('self') && roles.includes(actor.role)) {
       if (id == actorInfo.id) {
@@ -67,7 +61,7 @@ export class RolesAndDeptGuard implements CanActivate {
               (userInfo.role.id == 2 || userInfo.role.id == 5)
             ) {
               hasPermission = true;
-              console.log('admin');
+              // console.log('admin');
             } else {
               hasPermission = false;
               break;
@@ -92,7 +86,7 @@ export class RolesAndDeptGuard implements CanActivate {
               (userInfo.role.id == 3 || userInfo.role.id == 4)
             ) {
               hasPermission = true;
-              console.log('admin');
+              // console.log('admin');
             } else {
               hasPermission = false;
               break;
@@ -105,7 +99,7 @@ export class RolesAndDeptGuard implements CanActivate {
     }
 
     request.actorId = actorInfo.id;
-    console.log('permission', hasPermission);
+    request.user = actorInfo;
     return hasPermission;
   }
 }
