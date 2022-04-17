@@ -188,4 +188,22 @@ export class LockersService {
       .getMany();
     return result;
   }
+
+  async viewLocker(user: any) {
+    console.log('user', user);
+    if(user.role.role == 'super_admin') {
+      const result = await this.lockerRepository.find({
+        relations: ['department']
+      })
+      console.log('result', result);
+    } else if(user.role.role == 'admin') {
+      const result = await this.lockerRepository.find({
+        relations:['department'],
+        where:{ 
+          department: 1
+        }
+      });
+      console.log('result', result);
+    }
+  }
 }

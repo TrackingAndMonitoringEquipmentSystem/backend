@@ -12,8 +12,9 @@ export class GroupRepairController {
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('master_maintainer', 'maintainer')
-  @Get('maintainer/getRepairList')
+  @Get('getRepairList')
   requestRepairList() {
+    //console.log('test');
     return this.groupRepairService.findRepairList();
   }
   

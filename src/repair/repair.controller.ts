@@ -44,6 +44,7 @@ export class RepairController {
   @Roles('super_admin', 'admin')
   @Get('getReportRepairList/:id')
   request(@Param('id') id:string) {
+    console.log('123');
     return this.repairService.findReportByEquipId(+id);
   }
 
@@ -56,27 +57,8 @@ export class RepairController {
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
-  @Patch('cancelRequest')
+  @Patch('cancelRequest/:id')
   cancel(@Param('id') id:string) {
     return this.repairService.cancelRequest(id);
   }
-  /*@Get()
-  findAll() {
-    return this.repairService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.repairService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRepairDto: UpdateRepairDto) {
-    return this.repairService.update(+id, updateRepairDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.repairService.remove(+id);
-  }*/
 }

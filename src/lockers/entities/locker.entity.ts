@@ -1,5 +1,4 @@
 import { User } from "src/users/entities/user.entity";
-import { Location } from "src/location/entities/location.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Department } from "src/department/entities/department.entity";
 import { VideoRecord } from "src/video-record/entities/video-record.entity";
@@ -7,6 +6,7 @@ import { TemporaryUser } from "src/temporary-user/entities/temporary-user.entity
 import { TemporaryDept } from "src/temporary-dept/entities/temporary-dept.entity";
 import { Camera } from "src/camera/entities/camera.entity";
 import { Equipment } from "src/equipment/entities/equipment.entity";
+import { Room } from "src/location/entities/room.entity";
 
 @Entity()
 export class Locker {
@@ -61,14 +61,9 @@ export class Locker {
   @OneToMany(() => TemporaryDept, (temporaryDepts) => temporaryDepts.locker)
   temporaryDepts!: TemporaryDept[];
 
-     @ManyToOne(() => VideoRecord, videoRecord => videoRecord.locker)
-     videos: VideoRecord[];
 
-     @OneToMany(() => TemporaryUser, temporaryUsers => temporaryUsers.locker)
-     temporaryUsers!: TemporaryUser[];
 
-     @OneToMany(() => TemporaryDept, temporaryDepts => temporaryDepts.locker)
-     temporaryDepts!: TemporaryDept[];
+     
 
      @OneToMany(() => Camera, camera => camera.locker)
      cameras: Camera[];

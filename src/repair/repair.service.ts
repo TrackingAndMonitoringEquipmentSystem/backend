@@ -124,7 +124,7 @@ export class RepairService {
     for(let i = 0; i < repairList.length; i++){
       await this.repairRepository.update(repairList[i].id, {
         status: 'ดำเนินการเสร็จสิ้น',
-        repair_at: today
+        finished_at: today
       })
     }
     await this.groupRepairService.update(id, 'ดำเนินการเสร็จสิ้น');

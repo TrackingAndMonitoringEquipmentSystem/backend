@@ -27,6 +27,16 @@ export class LockerGateway
   }
   emitLocketUpdate(locker: Locker) {
     console.log('->emitLocketUpdate:', locker);
-    this.server.emit(`locker/${locker.locker_id}`, locker);
+    this.server.emit(`locker/${locker.locker_id}`, {command: 'lockerUpdate', data: locker});
+  }
+  async addEquipment(lockerId: number): Promise<any> {
+    console.log('->emitLocketUpdate:', lockerId); 
+    this.server.emit(`locker/${lockerId}`, {command: 'addEquipment'});
+    return new Promise((resolve,reject) => {
+      this.server.prependOnceListener(`locker/${lockerId}/response`, (response) => {
+        console.log('response',response);
+        resolve(response)
+      });
+    });
   }
 }

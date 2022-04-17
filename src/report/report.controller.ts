@@ -19,14 +19,14 @@ export class ReportController {
 
   /*@UseGuards(RolesAndDeptGuard)
   @Roles('super_admin','admin')*/
-  @Get('getAllReport')
+  @Get('')
   findAll() {
     return this.reportService.findAll();
   }
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('admin', 'master_maintainer', 'maintainer', 'user')
-  @Get('get/:id')
+  @Get(':id')
   view(@Param('id') id: string) {
     return this.reportService.view(id);
   }
