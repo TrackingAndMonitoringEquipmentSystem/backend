@@ -19,6 +19,13 @@ import { TemporaryUserModule } from './temporary-user/temporary-user.module';
 import { TemporaryDeptModule } from './temporary-dept/temporary-dept.module';
 import { CameraModule } from './camera/camera.module';
 import { FaceRecognitionModule } from './face-recognition/face-recognition.module';
+import { EquipmentModule } from './equipment/equipment.module';
+import { TypeEquipmentModule } from './type-equipment/type-equipment.module';
+import { BorrowReturnModule } from './borrow-return/borrow-return.module';
+import { GroupBorrowModule } from './group-borrow/group-borrow.module';
+import { ReportModule } from './report/report.module';
+import { RepairModule } from './repair/repair.module';
+import { GroupRepairModule } from './group-repair/group-repair.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -56,6 +63,13 @@ import { FaceRecognitionModule } from './face-recognition/face-recognition.modul
     CameraModule,
     PublicModule,
     FaceRecognitionModule,
+    EquipmentModule,
+    TypeEquipmentModule,
+    BorrowReturnModule,
+    GroupBorrowModule,
+    ReportModule,
+    RepairModule,
+    GroupRepairModule,
   ],
   controllers: [AppController],
   providers: [AppService],

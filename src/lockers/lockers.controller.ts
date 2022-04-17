@@ -23,7 +23,7 @@ export class LockersController {
   constructor(private readonly lockersService: LockersService) {}
 
   @UseGuards(RolesAndLockerGuard)
-  @Roles('super_admin', 'admin')
+  @Roles('create', 'super_admin', 'admin')
   @Post('registerLocker/:locker')
   create(
     @Request() req,
@@ -46,7 +46,7 @@ export class LockersController {
   }
 
   @UseGuards(RolesAndLockerGuard)
-  @Roles('admin')
+  @Roles('admin','super_admin')
   @Get('viewLocker/:locker')
   view(@Param('locker') id: string) {
     return this.lockersService.find(id);

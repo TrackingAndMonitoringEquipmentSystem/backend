@@ -98,6 +98,7 @@ export class RolesAndDeptGuard implements CanActivate {
       hasPermission = true;
     }
 
+    request.actor = actorInfo.email;
     request.actorId = actorInfo.id;
     request.user = actorInfo;
     return hasPermission;

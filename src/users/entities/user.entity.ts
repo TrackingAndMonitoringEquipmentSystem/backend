@@ -12,6 +12,9 @@ import { Role } from './role.entity';
 import { Department } from 'src/department/entities/department.entity';
 import { VideoRecord } from 'src/video-record/entities/video-record.entity';
 import { TemporaryUser } from 'src/temporary-user/entities/temporary-user.entity';
+import { BorrowReturn } from 'src/borrow-return/entities/borrow-return.entity';
+import { Repair } from 'src/repair/entities/repair.entity';
+import { Report } from 'src/report/entities/report.entity';
 
 @Entity()
 export class User {
@@ -72,4 +75,13 @@ export class User {
 
   @OneToMany(() => TemporaryUser, (temporaryUsers) => temporaryUsers.user)
   temporaryUsers!: TemporaryUser[];
+
+  @OneToMany(() => BorrowReturn, (borrowReturn) => borrowReturn.user)
+  borrowReturns: BorrowReturn[];
+
+  @OneToMany(() => Repair, (repair) => repair.user)
+  repairs: Repair[];
+
+  @OneToMany(() => Report, (report) => report.user)
+  reports: Report[];
 }

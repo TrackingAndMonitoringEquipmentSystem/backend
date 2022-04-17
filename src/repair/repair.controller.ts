@@ -1,0 +1,82 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
+import { RepairService } from './repair.service';
+import { CreateRepairDto } from './dto/create-repair.dto';
+import { UpdateRepairDto } from './dto/update-repair.dto';
+import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
+import { Roles } from 'src/utils/guard/roles.decorator';
+
+
+
+@Controller('equipment')
+export class RepairController {
+  constructor(private readonly repairService: RepairService) {}
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
+  @Post('report-repair/:id')
+  create(@Body() createRepairDto: CreateRepairDto, @Param('id') id: string, @Req() req) {
+    return this.repairService.create(+id, createRepairDto, req.actorId);
+  }
+
+ /* @UseGuards(RolesAndDeptGuard)
+  @Roles('master_maintainer', 'maintainer')
+  @Get('getAllRepairList/12345')
+  requestRepairList() {
+    return '5555';
+    //return this.repairService.findRepairList();
+  }*/
+  
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('master_maintainer', 'maintainer')
+  @Patch('repair/:id')
+  repair(@Param('id') id: string, @Req() req) {
+    return this.repairService.repair(+id, req.actorId);
+  }
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('master_maintainer', 'maintainer')
+  @Patch('finishRepair/:id')
+  finishRepair(@Param('id') id: string, @Req() req) {
+    return this.repairService.finishRepair(+id, req.actorId);
+  }
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin')
+  @Get('getReportRepairList/:id')
+  request(@Param('id') id:string) {
+    return this.repairService.findReportByEquipId(+id);
+  }
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin')
+  @Post('createRequest/:id')
+  createRequest(@Param('id') id:string, @Req() req) {
+    return this.repairService.sendRequest(id, req.actorId );
+  }
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin')
+  @Patch('cancelRequest')
+  cancel(@Param('id') id:string) {
+    return this.repairService.cancelRequest(id);
+  }
+  /*@Get()
+  findAll() {
+    return this.repairService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.repairService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateRepairDto: UpdateRepairDto) {
+    return this.repairService.update(+id, updateRepairDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.repairService.remove(+id);
+  }*/
+}
