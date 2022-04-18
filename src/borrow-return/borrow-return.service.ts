@@ -38,6 +38,7 @@ export class BorrowReturnService
         groupBorrow: groupId,
         equipment: equip.data[i],
         user: actor,
+        status: 'ยืมอยู่'
       });
       await this.borrowReturnRepo.save(borrow); 
       await this.equipmentService.updateStatus(equip.data[i].equipment_id, 'ถูกยืมอยู่', actor);
@@ -46,6 +47,7 @@ export class BorrowReturnService
   }
 
   async return(ids: string, actor: any) {
+    const today =  new Date()
     let transactionIds = ids.split(',').map(Number);
     const date = new Date();
     for(let i = 0; i< transactionIds.length; i++){
@@ -56,14 +58,24 @@ export class BorrowReturnService
         relations: ['equipment', 'user']
       });
       //console.log('actor',actor);
-      await this.borrowReturnRepo.update(borrow.id, {return_at: date});
+      if(today <= borrow.deadline_at ) {
+        await this.borrowReturnRepo.update(borrow.id, {return_at: date, status: 'คืนแล้ว' });
+      } else {
+        await this.borrowReturnRepo.update(borrow.id, {return_at: date, status: 'ล่าช้า' });
+      }
       await this.equipmentService.updateStatus(borrow.equipment.equipment_id,  'พร้อมใช้งาน', actor);
     };
     return getResponse('00', null);
   }
 
-  findAll() {
-    return `This action returns all borrowReturn`;
+  async findAll(user: any) {
+    const result = await this.borrowReturnRepo.find({
+      relations: ['equipment'],
+      where: {
+        user: user.id
+      }
+    })
+    return result;
   }
 
   findOne(id: number) {

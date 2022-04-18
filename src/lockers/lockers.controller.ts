@@ -19,12 +19,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { LockerGateway } from './locker.gateway';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
+import { DepartmentService } from 'src/department/department.service';
 
 @ApiTags('lockers')
 @Controller('lockers')
 export class LockersController {
   constructor(private readonly lockersService: LockersService,
-    private readonly lockerGateway: LockerGateway
+    private readonly lockerGateway: LockerGateway,
+    private readonly departmentService: DepartmentService,
     ) {}
 
   @UseGuards(RolesAndLockerGuard)
@@ -38,11 +40,11 @@ export class LockersController {
     return this.lockersService.register(+locker, createLockerDto, req.actor);
   }
 
-  // @UseGuards(RolesAndLockerGuard)
-  // @Roles('super_admin')
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
   @Get()
-  viewAll() {
-    return this.lockersService.findAll();
+  viewAll(@Request() req) {
+    return this.lockersService.findAll(req.user);
   }
 
   @Post('preRegister/:numCamera')
@@ -110,13 +112,13 @@ export class LockersController {
   @Get('addEquipment/:locker')
   async addEquipment(@Param('locker') lockerId:number) {
     const result = await this.lockerGateway.addEquipment(lockerId);
+    return result;
   }
 
-  @UseGuards(RolesAndDeptGuard)
-  @Roles('super_admin', 'admin')
+  /*@UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin', 'user')
   @Get('locker')
   viewLocker(@Query() query , @Request() req){
-    //console.log('user', req.user);
-    this.lockersService.viewLocker(req.user);
-  }
+    return this.departmentService.viewLockerByDepartment(req.user);
+  }*/
 }

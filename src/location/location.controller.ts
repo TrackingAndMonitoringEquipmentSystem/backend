@@ -75,4 +75,11 @@ export class LocationController {
   getBuildings() {
     return this.locationService.getAllBuilding();
   }
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin')
+  @Get('viewByRoom')
+  viewByRoom(@Request() req) {
+    return this.locationService.viewByRoom(req.user);
+  }
 }

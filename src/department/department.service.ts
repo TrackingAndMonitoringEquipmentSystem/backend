@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
 import { getResponse } from 'src/utils/response';
 import { In, Repository } from 'typeorm';
+import { resourceLimits } from 'worker_threads';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { Department } from './entities/department.entity';
@@ -76,5 +77,22 @@ export class DepartmentService {
       },
     });
     return result;
+  }
+
+  async viewLockerByDepartment(user: any) {
+    if(user.role.role == 'super_admin') {
+      const result = await this.deptRepository.find({
+        relations: ['locker']
+      })
+      return result;
+    } else if(user.role.role == 'admin' || user.role.role == 'user') {
+      const result = await this.deptRepository.find({
+        relations:['locker'],
+        where:{ 
+          id: user.dept.id
+        }
+      });
+      return result;
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { TypeEquipmentService } from './type-equipment.service';
 import { CreateTypeEquipmentDto } from './dto/create-type-equipment.dto';
 import { UpdateTypeEquipmentDto } from './dto/update-type-equipment.dto';
@@ -23,7 +23,7 @@ export class TypeEquipmentController {
     return this.typeEquipmentService.findAll();
   }
 
-  @Get(':id')
+  @Get('viewByType/:id')
   findOne(@Param('id') id: string) {
     return this.typeEquipmentService.findOne(+id);
   }
@@ -38,5 +38,11 @@ export class TypeEquipmentController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.typeEquipmentService.remove(+id);
+  }
+
+  @Roles('super_admin', 'admin')
+  @Get('viewByEquipment')
+  viewByEquipment(@Request() req) {
+    return this.typeEquipmentService.viewByEquipment(req.user);
   }
 }

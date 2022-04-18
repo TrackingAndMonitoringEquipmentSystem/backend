@@ -79,12 +79,21 @@ export class LockersService {
     return getResponse('00', locker);
   }
 
-  async findAll() {
-    const result = await this.lockerRepository.find({
-      where: {
-        status: 'registered',
-      },
-    });
+  async findAll(user: any) {
+    const departmentId = user.dept.id;
+    const result = await this.lockerRepository.createQueryBuilder('locker')
+    .innerJoin('locker.department', 'department')
+    .innerJoinAndSelect('locker.room', 'room')
+    .innerJoinAndSelect('room.floor', 'floor')
+    .innerJoinAndSelect('floor.building', 'building')
+    .where('department.id = :departmentId', { departmentId })
+    .getMany()
+    // const result = await this.lockerRepository.find({
+    //   relations: ['room','room.floor', 'room.floor.building','department' ],
+    //   where: {
+    //     department: department
+    //   }
+    // })
     return getResponse('00', result);
   }
 
@@ -189,21 +198,21 @@ export class LockersService {
     return result;
   }
 
-  async viewLocker(user: any) {
-    console.log('user', user);
-    if(user.role.role == 'super_admin') {
-      const result = await this.lockerRepository.find({
-        relations: ['department']
-      })
-      console.log('result', result);
-    } else if(user.role.role == 'admin') {
-      const result = await this.lockerRepository.find({
-        relations:['department'],
-        where:{ 
-          department: 1
-        }
-      });
-      console.log('result', result);
-    }
-  }
+  // async viewLocker(user: any) {
+  //   console.log('user', user);
+  //   if(user.role.role == 'super_admin') {
+  //     const result = await this.lockerRepository.find({
+  //       relations: ['department']
+  //     })
+  //     console.log('result', result);
+  //   } else if(user.role.role == 'admin') {
+  //     const result = await this.lockerRepository.find({
+  //       relations:['department'],
+  //       where:{ 
+  //         department: user.department
+  //       }
+  //     });
+  //     console.log('result', result);
+  //   }
+  // }
 }

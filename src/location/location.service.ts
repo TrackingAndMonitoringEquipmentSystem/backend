@@ -14,7 +14,7 @@ export class LocationService {
     private buildingRepository: Repository<Building>,
     @InjectRepository(Room)
     private roomRepository: Repository<Room>,
-  ) {}
+  ) { }
   create(createLocationDto: CreateLocationDto, user: User) {
     console.log('->user:', user);
     // let building: Building;
@@ -70,5 +70,30 @@ export class LocationService {
   async findRoomById(id: number) {
     const result = await this.roomRepository.findOne(id);
     return getResponse('00', result);
+  }
+
+  async viewByRoom(user: any) {
+    // const department = user.dept;
+    // return await this.roomRepository.find({
+    //   relations: ['floor','lockers', 'floor.building', 'lockers.department'],
+    //   where: (qb) => {
+    //     qb.where('lockers.department = :department', {
+    //       department
+    //     });
+    //   }
+    // });
+
+    if (user.role.role == 'super_admin') {
+      return await this.roomRepository.find({
+        relations: ['floor', 'lockers', 'floor.building'],
+      });
+    } else if (user.role.role == 'admin') {
+      const departmentId = user.dept.id;
+      return await this.roomRepository.createQueryBuilder('room')
+        .innerJoinAndSelect('room.lockers', 'lockers')
+        .innerJoin('lockers.department', 'department')
+        .where('department.id = :departmentId', { departmentId })
+        .getMany();
+    }
   }
 }

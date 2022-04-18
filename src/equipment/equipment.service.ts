@@ -16,12 +16,11 @@ export class EquipmentService {
     private equipmentRepository: Repository<Equipment>,
     private readonly usersService: UsersService,
     private readonly lockersServicer: LockersService,
-    private readonly typeEquipService: TypeEquipmentService,
   ) { }
-  async create( createEquipmentDto: CreateEquipmentDto[], actor) {
+  async create(createEquipmentDto: CreateEquipmentDto[], actor) {
     let user = await this.usersService.findByEmail(actor);
     for (let i = 0; i < createEquipmentDto.length; i++) {
-      if(createEquipmentDto[i].type == null && createEquipmentDto[i].duration == null) {
+      if (createEquipmentDto[i].type == null && createEquipmentDto[i].duration == null) {
         throw new HttpException(getResponse('25', null), HttpStatus.FORBIDDEN);
       }
       let equip = this.equipmentRepository.create({
@@ -54,9 +53,9 @@ export class EquipmentService {
 
   async update(id: number, updateEquipmentDto: UpdateEquipmentDto, actor) {
     const user = await this.usersService.findByEmail(actor);
-    await this.equipmentRepository.update(id, { ...updateEquipmentDto, updated_by: user});
+    await this.equipmentRepository.update(id, { ...updateEquipmentDto, updated_by: user });
     const result = await this.findOne(id);
-    if(result){
+    if (result) {
       return getResponse('00', result);
     }
     throw new HttpException(getResponse('26', null), HttpStatus.FORBIDDEN);
@@ -68,11 +67,32 @@ export class EquipmentService {
   }
 
   async findOne(id: number) {
-    const result = await this.equipmentRepository.findOne(id) 
+    const result = await this.equipmentRepository.findOne(id)
     return result;
   }
 
-  async updateStatus(id: number, status: string, actor: any){
-    await this.equipmentRepository.update(id, {status: status, updated_by: actor});
+  async updateStatus(id: number, status: string, actor: any) {
+    await this.equipmentRepository.update(id, { status: status, updated_by: actor });
+  }
+
+  async findEquipmentNoType() {
+    const result = await this.equipmentRepository.find({
+      relations: ['locker', 'locker.room', 'locker.room.floor', 'locker.room.floor.building'],
+      where: {
+        type: null,
+      },
+    })
+    return result;
+  }
+
+  async viewAll(user: any) {
+    const departmentId = user.dept.id;
+    const result = await this.equipmentRepository.createQueryBuilder('equipment')
+    .innerJoin('equipment.locker', 'locker')
+    .innerJoin('locker.department', 'department')
+    .where('department.id = :departmentId', { departmentId })
+    .orderBy('equipment.status')
+    .getMany()
+    return result;
   }
 }

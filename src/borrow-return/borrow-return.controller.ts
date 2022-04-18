@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, Request } from '@nestjs/common';
 import { Roles } from 'src/utils/guard/roles.decorator';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
 import { BorrowReturnService } from './borrow-return.service';
@@ -23,20 +23,22 @@ export class BorrowReturnController {
     return this.borrowReturnService.return(ids, req.actorId);
   }
   
-  /*@Get()
-  findAll() {
-    return this.borrowReturnService.findAll();
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
+  @Get('viewAllBorrow')
+  findAll(@Request() req) {
+    return this.borrowReturnService.findAll(req.user);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.borrowReturnService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.borrowReturnService.findOne(+id);
+  // }
 
   
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.borrowReturnService.remove(+id);
-  }*/
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.borrowReturnService.remove(+id);
+  // }
 }

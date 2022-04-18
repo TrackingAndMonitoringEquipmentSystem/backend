@@ -8,7 +8,7 @@ import { LockersModule } from 'src/lockers/lockers.module';
 import { TypeEquipmentModule } from 'src/type-equipment/type-equipment.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Equipment]),UsersModule, LockersModule, TypeEquipmentModule],
+  imports: [TypeOrmModule.forFeature([Equipment]),UsersModule, LockersModule],
   controllers: [EquipmentController],
   providers: [EquipmentService],
   exports: [EquipmentService]

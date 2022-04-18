@@ -48,7 +48,7 @@ export class Locker {
   })
   updated_by: User;
 
-  @ManyToMany(() => Department)
+  @ManyToMany(() => Department, (department) => department.locker)
   @JoinTable()
   department: Department[];
 

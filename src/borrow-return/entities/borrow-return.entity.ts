@@ -9,6 +9,9 @@ export class BorrowReturn {
     id: number;
 
     @Column()
+    status: string;
+    
+    @Column()
     borrowed_at: Date;
 
     @Column()

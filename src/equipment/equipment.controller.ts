@@ -17,9 +17,11 @@ export class EquipmentController {
     return this.equipmentService.create( createEquipmentDto, req.actor);
   }
 
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
   @Get()
-  findAll() {
-    return this.equipmentService.findAll();
+  findAll(@Request() req,) {
+    return this.equipmentService.viewAll(req.user);
   }
 
   @Get('findByEquipmentId/:id')

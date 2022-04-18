@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { Roles } from 'src/utils/guard/roles.decorator';
 import { DepartmentService } from './department.service';
@@ -15,6 +17,7 @@ import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
 import { ApiTags } from '@nestjs/swagger';
+
 
 @ApiTags('department')
 @UseGuards(RolesAndDeptGuard)
@@ -53,5 +56,11 @@ export class DepartmentController {
   @Delete('removeDepartment/:id')
   remove(@Param('id') id: string) {
     return this.departmentService.remove(+id);
+  }
+
+  @Roles('super_admin', 'admin')
+  @Get('viewByDepartment')
+  viewByDepartment(@Request() req) {
+    return this.departmentService.viewLockerByDepartment(req.user);
   }
 }

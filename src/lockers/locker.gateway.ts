@@ -5,6 +5,8 @@ import {
   OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
+  MessageBody,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { Locker } from './entities/locker.entity';
@@ -15,7 +17,7 @@ export class LockerGateway
   @WebSocketServer()
   server: Server;
   private logger: Logger = new Logger('LockerGateway');
-
+  private addEquipmentResponseResolves: Record<number, (data)=>void> = {};
   afterInit(server: any) {
     this.logger.log('initialized');
   }
@@ -32,11 +34,16 @@ export class LockerGateway
   async addEquipment(lockerId: number): Promise<any> {
     console.log('->emitLocketUpdate:', lockerId); 
     this.server.emit(`locker/${lockerId}`, {command: 'addEquipment'});
-    return new Promise((resolve,reject) => {
-      this.server.prependOnceListener(`locker/${lockerId}/response`, (response) => {
-        console.log('response',response);
-        resolve(response)
-      });
-    });
+    return new Promise(((resolve,reject) => {
+      this.addEquipmentResponseResolves[lockerId] = resolve;
+    }).bind(this));
+
+  }
+
+  @SubscribeMessage('locker/addEquipment/response') 
+  lockerResponse(@MessageBody() data: any){
+    console.log('->data:', data);
+    this.addEquipmentResponseResolves[data.id](data.data);
+
   }
 }
