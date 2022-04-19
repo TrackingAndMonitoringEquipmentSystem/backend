@@ -18,12 +18,21 @@ export class GroupBorrowService {
     return group;
   }
 
-  findAll() {
-    return `This action returns all groupBorrow`;
+  async findAll(user: any) {
+    const userId = user.id;
+    const result = await this.groupBorrowRepo.createQueryBuilder('group')
+    .innerJoinAndSelect('group.borrowReturns', 'borrowReturns')
+    .innerJoin('borrowReturns.user', 'user')
+    .innerJoinAndSelect('borrowReturns.equipment', 'equipment')
+    .where('user.id = :userId', { userId })
+    .getMany()
+    return result;
   }
 
   async findOne(id: number) {
-    const result = await this.groupBorrowRepo.findOne(id); 
+    const result = await this.groupBorrowRepo.findOne(id,{
+      relations: ['equipment']
+    }); 
     return result;
   }
 

@@ -90,6 +90,8 @@ export class LocationService {
     } else if (user.role.role == 'admin') {
       const departmentId = user.dept.id;
       return await this.roomRepository.createQueryBuilder('room')
+        .innerJoinAndSelect('room.floor', 'floor')
+        .innerJoinAndSelect('floor.building', 'building')
         .innerJoinAndSelect('room.lockers', 'lockers')
         .innerJoin('lockers.department', 'department')
         .where('department.id = :departmentId', { departmentId })

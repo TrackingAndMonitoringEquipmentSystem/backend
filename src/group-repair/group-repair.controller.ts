@@ -6,7 +6,7 @@ import { Roles } from 'src/utils/guard/roles.decorator';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
 
 
-@Controller('equipment')
+@Controller('repair')
 export class GroupRepairController {
   constructor(private readonly groupRepairService: GroupRepairService) {}
 
@@ -14,7 +14,6 @@ export class GroupRepairController {
   @Roles('master_maintainer', 'maintainer')
   @Get('getRepairList')
   requestRepairList() {
-    //console.log('test');
     return this.groupRepairService.findRepairList();
   }
   

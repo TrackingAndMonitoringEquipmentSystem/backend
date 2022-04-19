@@ -10,25 +10,24 @@ import { UpdateBorrowReturnDto } from './dto/update-borrow-return.dto';
 import { BorrowReturn } from './entities/borrow-return.entity';
 
 @Injectable()
-export class BorrowReturnService 
-{
+export class BorrowReturnService {
   constructor(
     @InjectRepository(BorrowReturn)
-    private borrowReturnRepo : Repository<BorrowReturn>,
+    private borrowReturnRepo: Repository<BorrowReturn>,
     private readonly groupBorrow: GroupBorrowService,
     private readonly equipmentService: EquipmentService,
-    private readonly usersService : UsersService,
-  ) {}
-  
+    private readonly usersService: UsersService,
+  ) { }
+
   async borrow(ids: string, actor) {
     //let equipmentIds = ids.split(',').map(Number);
     const today = new Date();
     let equip = await this.equipmentService.find(ids);
     const groupId = await this.groupBorrow.create();
-    for(let i = 0; i < equip.data.length; i++) {
+    for (let i = 0; i < equip.data.length; i++) {
       let deadline = new Date();
       let duration = equip.data[i].duration;
-      if(equip.data[i].duration == null)  {
+      if (equip.data[i].duration == null) {
         duration = equip.data[i].type.duration;
       }
       deadline.setDate(deadline.getDate() + duration);
@@ -40,53 +39,80 @@ export class BorrowReturnService
         user: actor,
         status: 'ยืมอยู่'
       });
-      await this.borrowReturnRepo.save(borrow); 
+      await this.borrowReturnRepo.save(borrow);
       await this.equipmentService.updateStatus(equip.data[i].equipment_id, 'ถูกยืมอยู่', actor);
     };
     return getResponse('00', null);
   }
 
   async return(ids: string, actor: any) {
-    const today =  new Date()
+    const today = new Date()
     let transactionIds = ids.split(',').map(Number);
     const date = new Date();
-    for(let i = 0; i< transactionIds.length; i++){
+    for (let i = 0; i < transactionIds.length; i++) {
       let borrow = await this.borrowReturnRepo.findOne({
-        where : {
+        where: {
           id: transactionIds[i]
         },
         relations: ['equipment', 'user']
       });
-      //console.log('actor',actor);
-      if(today <= borrow.deadline_at ) {
-        await this.borrowReturnRepo.update(borrow.id, {return_at: date, status: 'คืนแล้ว' });
+      if (today <= borrow.deadline_at) {
+        await this.borrowReturnRepo.update(borrow.id, { return_at: date, status: 'คืนแล้ว' });
       } else {
-        await this.borrowReturnRepo.update(borrow.id, {return_at: date, status: 'ล่าช้า' });
+        await this.borrowReturnRepo.update(borrow.id, { return_at: date, status: 'ล่าช้า' });
       }
-      await this.equipmentService.updateStatus(borrow.equipment.equipment_id,  'พร้อมใช้งาน', actor);
+      await this.equipmentService.updateStatus(borrow.equipment.equipment_id, 'พร้อมใช้งาน', actor);
     };
     return getResponse('00', null);
   }
 
-  async findAll(user: any) {
-    const result = await this.borrowReturnRepo.find({
-      relations: ['equipment'],
-      where: {
-        user: user.id
-      }
+  // async findAll(user: any) {
+  //   const result = await this.borrowReturnRepo.find({
+  //     relations: ['equipment'],
+  //     where: {
+  //       user: user.id
+  //     }
+  //   })
+  //   return result;
+  // }
+
+  async findOne(id: number) {
+    const result = await this.borrowReturnRepo.findOne(id, {
+      relations: ['equipment']
     })
     return result;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} borrowReturn`;
+  async updateStatus(borrowId: number, status: string) {
+    const today = new Date();
+    let result;
+    if (status == 'คืนแล้ว') {
+      result = await this.borrowReturnRepo.update(borrowId, {
+        status: status,
+        return_at: today
+      });
+    } else {
+      result = await this.borrowReturnRepo.update(borrowId, {
+        status: status,
+      });
+    }
+    return result;
   }
 
-  update(id: number, updateBorrowReturnDto: UpdateBorrowReturnDto) {
-    return `This action updates a #${id} borrowReturn`;
+  async remove(id: number) {
+
+    await this.borrowReturnRepo.delete(id)
+    return getResponse('00', null);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} borrowReturn`;
+  async viewHistory(equipment: number) {
+    // const result = await this.borrowReturnRepo.find();
+    const result = await this.borrowReturnRepo.find({
+      relations: ['user'],
+      where: {
+        equipment: equipment
+      }
+    })
+    return result;
   }
 }

@@ -12,7 +12,7 @@ export class EquipmentController {
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
-  @Post('createEquipment')
+  @Post('')
   create(@Request() req,  @Body() createEquipmentDto: CreateEquipmentDto[]) {
     return this.equipmentService.create( createEquipmentDto, req.actor);
   }
@@ -24,21 +24,21 @@ export class EquipmentController {
     return this.equipmentService.viewAll(req.user);
   }
 
-  @Get('findByEquipmentId/:id')
+  @Get('viewByEquipmentId:id')
   findOne(@Param('id') id: string) {
     return this.equipmentService.find(id);
   }
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
-  @Patch('updateEquipment/:id')
+  @Patch(':id')
   update(@Request() req, @Param('id') id: string, @Body() updateEquipmentDto: UpdateEquipmentDto) {
     return this.equipmentService.update(+id, updateEquipmentDto, req.actor);
   }
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
-  @Delete('removeEquipment/:id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.equipmentService.remove(+id);
   }

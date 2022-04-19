@@ -11,5 +11,6 @@ import { UsersModule } from 'src/users/users.module';
   imports: [TypeOrmModule.forFeature([BorrowReturn]), GroupBorrowModule, EquipmentModule, UsersModule],
   controllers: [BorrowReturnController],
   providers: [BorrowReturnService],
+  exports: [BorrowReturnService]
 })
 export class BorrowReturnModule {}

@@ -78,7 +78,7 @@ export class LocationController {
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
-  @Get('viewByRoom')
+  @Get('viewLockerByRoom')
   viewByRoom(@Request() req) {
     return this.locationService.viewByRoom(req.user);
   }

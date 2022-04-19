@@ -7,7 +7,7 @@ import { Roles } from 'src/utils/guard/roles.decorator';
 
 
 
-@Controller('equipment')
+@Controller('repair')
 export class RepairController {
   constructor(private readonly repairService: RepairService) {}
 

@@ -59,7 +59,7 @@ export class DepartmentController {
   }
 
   @Roles('super_admin', 'admin')
-  @Get('viewByDepartment')
+  @Get('viewLockerByDepartment')
   viewByDepartment(@Request() req) {
     return this.departmentService.viewLockerByDepartment(req.user);
   }

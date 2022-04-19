@@ -1,7 +1,8 @@
 import { Equipment } from "src/equipment/entities/equipment.entity";
 import { GroupBorrow } from "src/group-borrow/entities/group-borrow.entity";
+import { Report } from "src/report/entities/report.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class BorrowReturn {
@@ -28,4 +29,7 @@ export class BorrowReturn {
 
     @ManyToOne(() => User, (user) => user.borrowReturns)
     user: User;
+
+    @OneToOne(() => Report, (report) => report.borrowReturn)
+    report: Report;
 }
