@@ -6,26 +6,25 @@ import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
 import { Roles } from 'src/utils/guard/roles.decorator';
 
 
-
+@UseGuards(RolesAndDeptGuard)
 @Controller('repair')
 export class RepairController {
-  constructor(private readonly repairService: RepairService) {}
+  constructor(private readonly repairService: RepairService) { }
 
-  @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
   @Post('report-repair/:id')
   create(@Body() createRepairDto: CreateRepairDto, @Param('id') id: string, @Req() req) {
     return this.repairService.create(+id, createRepairDto, req.actorId);
   }
 
- /* @UseGuards(RolesAndDeptGuard)
-  @Roles('master_maintainer', 'maintainer')
-  @Get('getAllRepairList/12345')
-  requestRepairList() {
-    return '5555';
-    //return this.repairService.findRepairList();
-  }*/
-  
+  /* @UseGuards(RolesAndDeptGuard)
+   @Roles('master_maintainer', 'maintainer')
+   @Get('getAllRepairList/12345')
+   requestRepairList() {
+     return '5555';
+     //return this.repairService.findRepairList();
+   }*/
+
   @UseGuards(RolesAndDeptGuard)
   @Roles('master_maintainer', 'maintainer')
   @Patch('repair/:id')
@@ -43,7 +42,7 @@ export class RepairController {
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
   @Get('getReportRepairList/:id')
-  request(@Param('id') id:string) {
+  request(@Param('id') id: string) {
     console.log('123');
     return this.repairService.findReportByEquipId(+id);
   }
@@ -51,14 +50,20 @@ export class RepairController {
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
   @Post('createRequest/:id')
-  createRequest(@Param('id') id:string, @Req() req) {
-    return this.repairService.sendRequest(id, req.actorId );
+  createRequest(@Param('id') id: string, @Req() req) {
+    return this.repairService.sendRequest(id, req.actorId);
   }
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
   @Patch('cancelRequest/:id')
-  cancel(@Param('id') id:string) {
+  cancel(@Param('id') id: string) {
     return this.repairService.cancelRequest(id);
   }
+
+  // @Roles('super_admin', 'admin')
+  // @Get('viewHistory/:equipmentId')
+  // viewHistory(@Param('equipmentId') id: number) {
+  //   return this.repairService.viewHistory(id);
+  // }
 }

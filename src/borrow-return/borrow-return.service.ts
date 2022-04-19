@@ -100,13 +100,11 @@ export class BorrowReturnService {
   }
 
   async remove(id: number) {
-
     await this.borrowReturnRepo.delete(id)
     return getResponse('00', null);
   }
 
   async viewHistory(equipment: number) {
-    // const result = await this.borrowReturnRepo.find();
     const result = await this.borrowReturnRepo.find({
       relations: ['user'],
       where: {

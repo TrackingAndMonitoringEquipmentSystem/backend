@@ -8,7 +8,7 @@ import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
 
 @Controller('repair')
 export class GroupRepairController {
-  constructor(private readonly groupRepairService: GroupRepairService) {}
+  constructor(private readonly groupRepairService: GroupRepairService) { }
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('master_maintainer', 'maintainer')
@@ -16,7 +16,12 @@ export class GroupRepairController {
   requestRepairList() {
     return this.groupRepairService.findRepairList();
   }
-  
+
+  @Roles('super_admin', 'admin')
+  @Get('viewHistory/:equipmentId')
+  viewHistory(@Param('equipmentId') id: number) {
+    return this.groupRepairService.viewHistory(id);
+  }
   /*@Post()
   create(@Body() createGroupRepairDto: CreateGroupRepairDto) {
     return this.groupRepairService.create(createGroupRepairDto);

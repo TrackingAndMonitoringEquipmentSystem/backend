@@ -26,7 +26,7 @@ export class LockersService {
     private readonly tempDeptService: TemporaryDeptService,
     private jwtService: JwtService,
     private lockerGateway: LockerGateway,
-  ) {}
+  ) { }
 
   async register(
     lockerId: number,
@@ -82,12 +82,12 @@ export class LockersService {
   async findAll(user: any) {
     const departmentId = user.dept.id;
     const result = await this.lockerRepository.createQueryBuilder('locker')
-    .innerJoin('locker.department', 'department')
-    .innerJoinAndSelect('locker.room', 'room')
-    .innerJoinAndSelect('room.floor', 'floor')
-    .innerJoinAndSelect('floor.building', 'building')
-    .where('department.id = :departmentId', { departmentId })
-    .getMany()
+      .innerJoin('locker.department', 'department')
+      .innerJoinAndSelect('locker.room', 'room')
+      .innerJoinAndSelect('room.floor', 'floor')
+      .innerJoinAndSelect('floor.building', 'building')
+      .where('department.id = :departmentId', { departmentId })
+      .getMany()
     // const result = await this.lockerRepository.find({
     //   relations: ['room','room.floor', 'room.floor.building','department' ],
     //   where: {
@@ -197,6 +197,16 @@ export class LockersService {
       .getMany();
     return result;
   }
+
+  async viewRepair() {
+    const result = await this.lockerRepository.createQueryBuilder('repair')
+      .innerJoinAndSelect('repair.equipment', 'equipment')
+      .where('equipment.status = :status', { status: 'รับเรื่องแจ้งซ่อม' })
+      .getMany()
+    return result;
+  }
+
+
 
   // async viewLocker(user: any) {
   //   console.log('user', user);

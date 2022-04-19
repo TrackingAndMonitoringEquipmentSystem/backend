@@ -11,7 +11,7 @@ export class GroupRepairService {
   constructor(
     @InjectRepository(GroupRepair)
     private groupRepairRepo: Repository<GroupRepair>,
-  ) {}
+  ) { }
 
   async create() {
     let group = this.groupRepairRepo.create({
@@ -26,7 +26,7 @@ export class GroupRepairService {
     return getResponse('00', result);
   }
 
-  async findRepairList(){
+  async findRepairList() {
     let result = await this.groupRepairRepo.find({
       where: {
         status: 'รับเรื่องแจ้งซ่อม'
@@ -41,10 +41,19 @@ export class GroupRepairService {
   }
 
   async update(id: number, status: string) {
-    await this.groupRepairRepo.update(id, {status: status});
+    await this.groupRepairRepo.update(id, { status: status });
   }
 
   remove(id: number) {
     return `This action removes a #${id} groupRepair`;
+  }
+
+  async viewHistory(equipmentId: number) {
+    const result = await this.groupRepairRepo.createQueryBuilder('groupRepair')
+      .innerJoinAndSelect('groupRepair.repairs', 'repairs')
+      .innerJoin('repairs.equipment', 'equipment')
+      .where('equipment.equipment_id = :equipmentId', { equipmentId })
+      .getMany()
+    return result;
   }
 }

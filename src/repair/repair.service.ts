@@ -33,7 +33,6 @@ export class RepairService {
     } else {
       throw new HttpException(getResponse('28', null), HttpStatus.FORBIDDEN);
     }
-
   }
 
   async find() {
@@ -43,19 +42,19 @@ export class RepairService {
 
   async findRepair(ids: string) {
     let repairIds = ids.split(',').map(Number);
-    let result = await this.repairRepository.findByIds(repairIds,{
+    let result = await this.repairRepository.findByIds(repairIds, {
       relations: ['equipment']
-    }); 
+    });
     return result;
   }
 
-  update(id: number, updateRepairDto: UpdateRepairDto) {
-    return `This action updates a #${id} repair`;
-  }
+  // update(id: number, updateRepairDto: UpdateRepairDto) {
+  //   return `This action updates a #${id} repair`;
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} repair`;
-  }
+  // remove(id: number) {
+  //   return `This action removes a #${id} repair`;
+  // }
 
   async findReportByEquipId(id: number) {
     let result = await this.repairRepository.find({
@@ -72,7 +71,7 @@ export class RepairService {
     const today = new Date();
     const group = await this.groupRepairService.create();
     let repairIds = ids.split(',').map(Number);
-    for(let i = 0; i < repairIds.length; i++){
+    for (let i = 0; i < repairIds.length; i++) {
       await this.repairRepository.update(repairIds[i], {
         approved_at: today,
         status: 'รับเรื่องแจ้งซ่อม',
@@ -82,13 +81,13 @@ export class RepairService {
     let repair = await this.repairRepository.findOne(repairIds[0], {
       relations: ['equipment'],
     });
-    await this.equipmentService.updateStatus(repair.equipment.equipment_id,'แจ้งซ่อม', actor );
+    await this.equipmentService.updateStatus(repair.equipment.equipment_id, 'แจ้งซ่อม', actor);
     return getResponse('00', null);
   }
 
   async cancelRequest(ids: string) {
     let repairIds = ids.split(',').map(Number);
-    for(let i = 0; i < repairIds.length; i++){
+    for (let i = 0; i < repairIds.length; i++) {
       await this.repairRepository.update(repairIds[i], {
         status: 'ยกเลิก',
       })
@@ -102,7 +101,7 @@ export class RepairService {
         groupRepair: id
       }
     })
-    for(let i = 0; i < repairList.length; i++){
+    for (let i = 0; i < repairList.length; i++) {
       await this.repairRepository.update(repairList[i].id, {
         status: 'กำลังดำเนินการ',
         maintainer_id: maintainer,
@@ -121,7 +120,7 @@ export class RepairService {
       },
       relations: ['equipment']
     })
-    for(let i = 0; i < repairList.length; i++){
+    for (let i = 0; i < repairList.length; i++) {
       await this.repairRepository.update(repairList[i].id, {
         status: 'ดำเนินการเสร็จสิ้น',
         finished_at: today
@@ -139,4 +138,13 @@ export class RepairService {
     })
     return getResponse('00', result)
   }*/
+
+  // async viewHistory(equipmentId: number) {
+  //   const result = await this.repairRepository.find({
+  //     where: {
+  //       equipment: equipmentId
+  //     }
+  //   });
+  //   return result;
+  // }
 }

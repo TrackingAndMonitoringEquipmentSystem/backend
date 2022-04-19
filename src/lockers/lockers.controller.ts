@@ -27,7 +27,7 @@ export class LockersController {
   constructor(private readonly lockersService: LockersService,
     private readonly lockerGateway: LockerGateway,
     private readonly departmentService: DepartmentService,
-    ) {}
+  ) { }
 
   @UseGuards(RolesAndLockerGuard)
   @Roles('create', 'super_admin', 'admin')
@@ -53,7 +53,7 @@ export class LockersController {
   }
 
   @UseGuards(RolesAndLockerGuard)
-  @Roles('admin','super_admin')
+  @Roles('admin', 'super_admin')
   @Get('viewLocker/:locker')
   view(@Param('locker') id: string) {
     return this.lockersService.find(id);
@@ -110,7 +110,7 @@ export class LockersController {
   }
 
   @Get('addEquipment/:locker')
-  async addEquipment(@Param('locker') lockerId:number) {
+  async addEquipment(@Param('locker') lockerId: number) {
     const result = await this.lockerGateway.addEquipment(lockerId);
     return result;
   }
@@ -121,4 +121,11 @@ export class LockersController {
   viewLocker(@Query() query , @Request() req){
     return this.departmentService.viewLockerByDepartment(req.user);
   }*/
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('master_maintainer', 'maintainer')
+  @Get('viewRepair')
+  viewRepair() {
+    return this.lockersService.viewRepair();
+  }
 }

@@ -88,11 +88,21 @@ export class EquipmentService {
   async viewAll(user: any) {
     const departmentId = user.dept.id;
     const result = await this.equipmentRepository.createQueryBuilder('equipment')
-    .innerJoin('equipment.locker', 'locker')
-    .innerJoin('locker.department', 'department')
-    .where('department.id = :departmentId', { departmentId })
-    .orderBy('equipment.status')
-    .getMany()
+      .innerJoin('equipment.locker', 'locker')
+      .innerJoin('locker.department', 'department')
+      .where('department.id = :departmentId', { departmentId })
+      .orderBy('equipment.status')
+      .getMany()
+    return result;
+  }
+
+  async viewRepair() {
+    const result = await this.equipmentRepository.find({
+      where: {
+        status: 'รับเรื่องแจ้งซ่อม'
+      },
+      relations: ['repairs']
+    });
     return result;
   }
 }

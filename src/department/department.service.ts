@@ -14,7 +14,7 @@ export class DepartmentService {
     @InjectRepository(Department)
     private deptRepository: Repository<Department>,
     private readonly userService: UsersService,
-  ) {}
+  ) { }
 
   async create(createDepartmentDto: CreateDepartmentDto, actorId) {
     const dept = this.deptRepository.create({
@@ -80,15 +80,15 @@ export class DepartmentService {
   }
 
   async viewLockerByDepartment(user: any) {
-    if(user.role.role == 'super_admin') {
+    if (user.role.role == 'super_admin') {
       const result = await this.deptRepository.find({
         relations: ['locker']
       })
       return result;
-    } else if(user.role.role == 'admin' || user.role.role == 'user') {
+    } else if (user.role.role == 'admin') {
       const result = await this.deptRepository.find({
-        relations:['locker'],
-        where:{ 
+        relations: ['locker'],
+        where: {
           id: user.dept.id
         }
       });
