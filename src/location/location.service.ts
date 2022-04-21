@@ -1,5 +1,5 @@
 import { Building } from './entities/building.entity';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getResponse } from 'src/utils/response';
 import { Repository } from 'typeorm';
@@ -73,16 +73,6 @@ export class LocationService {
   }
 
   async viewByRoom(user: any) {
-    // const department = user.dept;
-    // return await this.roomRepository.find({
-    //   relations: ['floor','lockers', 'floor.building', 'lockers.department'],
-    //   where: (qb) => {
-    //     qb.where('lockers.department = :department', {
-    //       department
-    //     });
-    //   }
-    // });
-
     if (user.role.role == 'super_admin') {
       return await this.roomRepository.find({
         relations: ['floor', 'lockers', 'floor.building'],
@@ -96,6 +86,96 @@ export class LocationService {
         .innerJoin('lockers.department', 'department')
         .where('department.id = :departmentId', { departmentId })
         .getMany();
+    }
+  }
+
+  async viewEquipment(typeId: number, status: string, user: any) {
+    const departmentId = user.dept.id;
+    let result;
+    console.log('-->type:', typeId);
+    console.log('-->status', status);
+    if (typeId == 0) {
+      console.log('1');
+      if (status == 'ยืมอยู่') {
+        result = await this.roomRepository.createQueryBuilder('room')
+          .innerJoinAndSelect('room.floor', 'floor')
+          .innerJoinAndSelect('floor.building', 'building')
+          .innerJoinAndSelect('room.lockers', 'lockers')
+          .innerJoin('lockers.department', 'department')
+          .innerJoinAndSelect('lockers.equipment', 'equipment')
+          .innerJoinAndSelect('equipment.borrowReturns', 'borrowReturns')
+          .where('department.id = :departmentId', { departmentId })
+          .andWhere('equipment.type IS NULL')
+          .andWhere('equipment.status = :status', { status: status })
+          .andWhere('borrowReturns.return_at IS NULL')
+          .getMany()
+      } else if (status == 'ส่งซ่อม') {
+        result = await this.roomRepository.createQueryBuilder('room')
+          .innerJoinAndSelect('room.floor', 'floor')
+          .innerJoinAndSelect('floor.building', 'building')
+          .innerJoinAndSelect('room.lockers', 'lockers')
+          .innerJoin('lockers.department', 'department')
+          .innerJoinAndSelect('lockers.equipment', 'equipment')
+          .innerJoinAndSelect('equipment.repairs', 'repairs')
+          .where('department.id = :departmentId', { departmentId })
+          .andWhere('equipment.type IS NULL')
+          .andWhere('equipment.status = :status', { status: status })
+          .andWhere('repairs.status = :repairStatus', { repairStatus: 'รับเรื่องแจ้งซ่อม' })
+          .getMany()
+      } else if (status == 'พร้อมใช้งาน') {
+        result = await this.roomRepository.createQueryBuilder('room')
+          .innerJoinAndSelect('room.floor', 'floor')
+          .innerJoinAndSelect('floor.building', 'building')
+          .innerJoinAndSelect('room.lockers', 'lockers')
+          .innerJoin('lockers.department', 'department')
+          .innerJoinAndSelect('lockers.equipment', 'equipment')
+          .where('department.id = :departmentId', { departmentId })
+          .andWhere('equipment.type IS NULL')
+          .andWhere('equipment.status = :status', { status: status })
+          .getMany()
+      }
+      return result;
+    } else if (typeId > 0) {
+      console.log('2');
+      if (status == 'ยืมอยู่') {
+        result = await this.roomRepository.createQueryBuilder('room')
+          .innerJoinAndSelect('room.floor', 'floor')
+          .innerJoinAndSelect('floor.building', 'building')
+          .innerJoinAndSelect('room.lockers', 'lockers')
+          .innerJoin('lockers.department', 'department')
+          .innerJoinAndSelect('lockers.equipment', 'equipment')
+          .innerJoinAndSelect('equipment.borrowReturns', 'borrowReturns')
+          .where('department.id = :departmentId', { departmentId })
+          .andWhere('equipment.type = :type', { type: typeId })
+          .andWhere('equipment.status = :status', { status: status })
+          .andWhere('borrowReturns.return_at IS NULL')
+          .getMany()
+      } else if (status == 'ส่งซ่อม') {
+        result = await this.roomRepository.createQueryBuilder('room')
+          .innerJoinAndSelect('room.floor', 'floor')
+          .innerJoinAndSelect('floor.building', 'building')
+          .innerJoinAndSelect('room.lockers', 'lockers')
+          .innerJoin('lockers.department', 'department')
+          .innerJoinAndSelect('lockers.equipment', 'equipment')
+          .innerJoinAndSelect('equipment.repairs', 'repair')
+          .where('department.id = :departmentId', { departmentId })
+          .andWhere('equipment.type = :type', { type: typeId })
+          .andWhere('equipment.status = :status', { status: status })
+          .andWhere('repairs.status = :repairStatus', { repairStatus: 'รับเรื่องแจ้งซ่อม' })
+          .getMany()
+      } else if (status == 'พร้อมใช้งาน') {
+        result = await this.roomRepository.createQueryBuilder('room')
+          .innerJoinAndSelect('room.floor', 'floor')
+          .innerJoinAndSelect('floor.building', 'building')
+          .innerJoinAndSelect('room.lockers', 'lockers')
+          .innerJoin('lockers.department', 'department')
+          .innerJoinAndSelect('lockers.equipment', 'equipment')
+          .where('department.id = :departmentId', { departmentId })
+          .andWhere('equipment.type = :type', { type: typeId })
+          .andWhere('equipment.status = :status', { status: status })
+          .getMany()
+      }
+      return result;
     }
   }
 }

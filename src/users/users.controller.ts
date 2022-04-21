@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateOnWeb } from './dto/create-on-web.dto';
 import { SendGridService } from '@anchan828/nest-sendgrid';
 import { Roles } from 'src/utils/guard/roles.decorator';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
@@ -24,7 +25,7 @@ export class UsersController {
   constructor(
     private service: UsersService,
     private readonly sendGrid: SendGridService,
-  ) {}
+  ) { }
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('self', 'super_admin')
@@ -117,5 +118,12 @@ export class UsersController {
   @Get('/viewUser/:id')
   view(@Param() params) {
     return this.service.viewUser(params.id);
+  }
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin')
+  @Post('createOnWeb')
+  createOnWeb(@Body() createOnWeb: CreateOnWeb[], @Request() req) {
+    return this.service.createUserOnWeb(createOnWeb, req.user);
   }
 }

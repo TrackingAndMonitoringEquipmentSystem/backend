@@ -9,6 +9,7 @@ import { SendGridService } from '@anchan828/nest-sendgrid';
 import * as admin from 'firebase-admin';
 import { getResponse } from 'src/utils/response';
 import { CreateByAdmin } from './dto/create-by-admin.dto';
+import { CreateOnWeb } from './dto/create-on-web.dto';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +17,7 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private readonly sendGrid: SendGridService,
-  ) {}
+  ) { }
 
   findAll(): Promise<User[]> {
     return this.usersRepository.find();
@@ -75,6 +76,32 @@ export class UsersService {
         updated_by: actorId,
       });
       await this.usersRepository.save(user);
+    }
+    return getResponse('00', null);
+  }
+
+  async createUserOnWeb(createOnWeb: CreateOnWeb[], actor: any) {
+    let hasPermission = false;
+    if (actor.role.role == 'super_admin') {
+      hasPermission = true;
+    } else if (actor.role.role == 'admin') {
+      for (let i = 0; i < createOnWeb.length; i++) {
+        if (createOnWeb[i].dept == actor.dept.id && (Number(createOnWeb[i].role) == 2 || Number(createOnWeb[i].role) == 5)) {
+          hasPermission = true;
+        } else {
+          throw new HttpException(getResponse('29', null), HttpStatus.FORBIDDEN);
+        }
+      }
+    }
+    if (hasPermission) {
+      for (let i = 0; i < createOnWeb.length; i++) {
+        let user = this.usersRepository.create({
+          ...createOnWeb[i],
+          status: 'Approved',
+          updated_by: actor.id,
+        });
+        await this.usersRepository.save(user);
+      }
     }
     return getResponse('00', null);
   }

@@ -12,7 +12,7 @@ export class EquipmentController {
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
-  @Post('')
+  @Post()
   create(@Request() req, @Body() createEquipmentDto: CreateEquipmentDto[]) {
     return this.equipmentService.create(createEquipmentDto, req.actor);
   }

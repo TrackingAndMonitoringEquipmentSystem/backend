@@ -81,7 +81,7 @@ export class RepairService {
     let repair = await this.repairRepository.findOne(repairIds[0], {
       relations: ['equipment'],
     });
-    await this.equipmentService.updateStatus(repair.equipment.equipment_id, 'แจ้งซ่อม', actor);
+    await this.equipmentService.updateStatus(repair.equipment.equipment_id, 'ส่งซ่อม', actor);
     return getResponse('00', null);
   }
 

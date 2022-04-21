@@ -40,7 +40,7 @@ export class BorrowReturnService {
         status: 'ยืมอยู่'
       });
       await this.borrowReturnRepo.save(borrow);
-      await this.equipmentService.updateStatus(equip.data[i].equipment_id, 'ถูกยืมอยู่', actor);
+      await this.equipmentService.updateStatus(equip.data[i].equipment_id, 'ยืมอยู่', actor);
     };
     return getResponse('00', null);
   }

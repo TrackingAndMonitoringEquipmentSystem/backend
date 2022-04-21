@@ -1,18 +1,18 @@
 export class ResponseDto {
-  successful: boolean;
-  errorCode: string;
-  message: string;
-  data: any;
+    successful: boolean;
+    errorCode: string;
+    message: string;
+    data: any;
 }
 
 export function getResponse(errorCode: string, data: any): ResponseDto {
-  const response = ResponseConstants.find((response) => {
-    return response.errorCode === errorCode;
-  });
-  if (errorCode == '00') {
-    response.data = data;
-  }
-  return response;
+    const response = ResponseConstants.find((response) => {
+        return response.errorCode === errorCode;
+    });
+    if (errorCode == '00') {
+        response.data = data;
+    }
+    return response;
 }
 
 const ResponseConstants: ResponseDto[] = [
@@ -188,6 +188,12 @@ const ResponseConstants: ResponseDto[] = [
         successful: false,
         errorCode: '28',
         message: 'cannot create report maintain ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '29',
+        message: 'cannot create user with department and role ',
         data: {},
     },
 ]

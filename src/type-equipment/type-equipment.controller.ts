@@ -10,9 +10,9 @@ import { Roles } from 'src/utils/guard/roles.decorator';
 @UseGuards(RolesAndDeptGuard)
 @Controller('type-equipment')
 export class TypeEquipmentController {
-  constructor(private readonly typeEquipmentService: TypeEquipmentService) {}
+  constructor(private readonly typeEquipmentService: TypeEquipmentService) { }
 
-  @Roles('super_admin','admin')
+  @Roles('super_admin', 'admin')
   @Post()
   create(@Body() createTypeEquipmentDto: CreateTypeEquipmentDto) {
     return this.typeEquipmentService.create(createTypeEquipmentDto);
@@ -28,13 +28,13 @@ export class TypeEquipmentController {
     return this.typeEquipmentService.findOne(+id);
   }
 
-  @Roles('super_admin','admin')
+  @Roles('super_admin', 'admin')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTypeEquipmentDto: UpdateTypeEquipmentDto) {
     return this.typeEquipmentService.update(+id, updateTypeEquipmentDto);
   }
 
-  @Roles('super_admin','admin')
+  @Roles('super_admin', 'admin')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.typeEquipmentService.remove(+id);
@@ -44,5 +44,11 @@ export class TypeEquipmentController {
   @Get('viewByEquipment')
   viewByEquipment(@Request() req) {
     return this.typeEquipmentService.viewByEquipment(req.user);
+  }
+
+  @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
+  @Get('userViewEquipment')
+  viewEquipment(@Request() req) {
+    return this.typeEquipmentService.viewEquipment(req.user);
   }
 }

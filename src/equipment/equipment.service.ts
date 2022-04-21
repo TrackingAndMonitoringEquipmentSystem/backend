@@ -4,7 +4,7 @@ import { LockersService } from 'src/lockers/lockers.service';
 import { TypeEquipmentService } from 'src/type-equipment/type-equipment.service';
 import { UsersService } from 'src/users/users.service';
 import { getResponse } from 'src/utils/response';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { CreateEquipmentDto } from './dto/create-equipment.dto';
 import { UpdateEquipmentDto } from './dto/update-equipment.dto';
 import { Equipment } from './entities/equipment.entity';
@@ -88,10 +88,13 @@ export class EquipmentService {
   async viewAll(user: any) {
     const departmentId = user.dept.id;
     const result = await this.equipmentRepository.createQueryBuilder('equipment')
+      .addSelect('COUNT(equipment.equipment_id) AS Count')
       .innerJoin('equipment.locker', 'locker')
+      .innerJoinAndSelect('equipment.type', 'type')
       .innerJoin('locker.department', 'department')
       .where('department.id = :departmentId', { departmentId })
-      .orderBy('equipment.status')
+      .groupBy('equipment.type')
+      .addGroupBy('equipment.status')
       .getMany()
     return result;
   }
@@ -104,5 +107,24 @@ export class EquipmentService {
       relations: ['repairs']
     });
     return result;
+  }
+
+  async groupEquipNoType(user: any) {
+    const departmentId = user.dept.id;
+    const equipment = await this.equipmentRepository.createQueryBuilder('equipment')
+      .innerJoin('equipment.locker', 'locker')
+      .innerJoin('locker.department', 'department')
+      .where('department.id = :departmentId', { departmentId })
+      .andWhere('typeId IS NULL')
+      .groupBy('equipment.status')
+      .select(['equipment.status', 'equipment_id', 'equipment.equip_pic'])
+      .addSelect('COUNT(equipment_id) AS count_equipment')
+      .getRawMany()
+    for (let i in equipment) {
+      equipment[i].type_id = null,
+        equipment[i].type_name = 'อุปกรณ์ทั่วไป',
+        equipment[i].type_duraion = null
+    }
+    return equipment;
   }
 }

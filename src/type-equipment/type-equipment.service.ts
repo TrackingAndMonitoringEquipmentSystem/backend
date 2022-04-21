@@ -82,7 +82,7 @@ export class TypeEquipmentService {
       const equipNoType = { id: null, name: null, duration: null, equipment: await this.equipmentService.findEquipmentNoType() };
       equip.push(equipNoType);
       return equip;
-    } else if(user.role.role == 'admin'){
+    } else if (user.role.role == 'admin') {
       const departmentId = user.dept.id;
 
       let equip = await this.typeEquipRepo.createQueryBuilder('type')
@@ -103,12 +103,31 @@ export class TypeEquipmentService {
         .where('department.id = :departmentId', { departmentId })
         .where('equipment.typeId IS NULL')
         .getMany()
-      equip.push({id: null, name:null, duration: null, equipment: equipNoType});
+      equip.push({ id: null, name: null, duration: null, equipment: equipNoType });
       return equip;
-
     }
+  }
 
+  async viewEquipment(user: any) {
+    const departmentId = user.dept.id;
+    let equipment = await this.typeEquipRepo.createQueryBuilder('type')
+      .innerJoin('type.equipment', 'equipment')
+      .innerJoin('equipment.locker', 'locker')
+      .innerJoin('locker.department', 'department')
+      .where('department.id = :departmentId', { departmentId })
+      .groupBy('equipment.status')
+      .select('type')
+      .addSelect('equipment.status')
+      .addSelect('equipment.equipment_id')
+      .addSelect('equipment.equip_pic')
+      .addSelect('COUNT(equipment.equipment_id) AS count_equipment')
+      .getRawMany()
 
+    let equipNoType = await this.equipmentService.groupEquipNoType(user);
+    for (let i in equipNoType) {
+      equipment.push(equipNoType[i]);
+    }
+    return equipment;
   }
 
 

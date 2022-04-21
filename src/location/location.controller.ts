@@ -20,7 +20,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 @ApiBearerAuth()
 @Controller('location')
 export class LocationController {
-  constructor(private readonly locationService: LocationService) {}
+  constructor(private readonly locationService: LocationService) { }
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
@@ -81,5 +81,12 @@ export class LocationController {
   @Get('viewLockerByRoom')
   viewByRoom(@Request() req) {
     return this.locationService.viewByRoom(req.user);
+  }
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
+  @Get('viewEquipmentByRoom/:type/:status')
+  viewEquipment(@Request() req, @Param('status') status: string, @Param('type') type?: number,) {
+    return this.locationService.viewEquipment(type, status, req.user);
   }
 }
