@@ -17,7 +17,7 @@ export class LockerGateway
   @WebSocketServer()
   server: Server;
   private logger: Logger = new Logger('LockerGateway');
-  private addEquipmentResponseResolves: Record<number, (data)=>void> = {};
+  private addEquipmentResponseResolves: Record<number, (data) => void> = {};
   afterInit(server: any) {
     this.logger.log('initialized');
   }
@@ -29,21 +29,28 @@ export class LockerGateway
   }
   emitLocketUpdate(locker: Locker) {
     console.log('->emitLocketUpdate:', locker);
-    this.server.emit(`locker/${locker.locker_id}`, {command: 'lockerUpdate', data: locker});
+    this.server.emit(`locker/${locker.locker_id}`, {
+      command: 'lockerUpdate',
+      data: locker,
+    });
   }
   async addEquipment(lockerId: number): Promise<any> {
-    console.log('->emitLocketUpdate:', lockerId); 
-    this.server.emit(`locker/${lockerId}`, {command: 'addEquipment'});
-    return new Promise(((resolve,reject) => {
-      this.addEquipmentResponseResolves[lockerId] = resolve;
-    }).bind(this));
-
+    console.log('->emitLocketUpdate:', lockerId);
+    this.server.emit(`locker/${lockerId}`, { command: 'addEquipment' });
+    return new Promise(
+      ((resolve, reject) => {
+        this.addEquipmentResponseResolves[lockerId] = resolve;
+      }).bind(this),
+    );
   }
 
-  @SubscribeMessage('locker/addEquipment/response') 
-  lockerResponse(@MessageBody() data: any){
-    console.log('->data:', data);
-    this.addEquipmentResponseResolves[data.id](data.data);
-
+  @SubscribeMessage('locker/addEquipment/response')
+  lockerResponse(@MessageBody() data: any) {
+    console.log('->data:', data[0]);
+    if (data.isSucceed) {
+      this.addEquipmentResponseResolves[data.id](data.data);
+    } else {
+      this.addEquipmentResponseResolves[data.id](data.message);
+    }
   }
 }

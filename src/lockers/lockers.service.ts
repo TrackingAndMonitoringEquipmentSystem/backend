@@ -26,7 +26,7 @@ export class LockersService {
     private readonly tempDeptService: TemporaryDeptService,
     private jwtService: JwtService,
     private lockerGateway: LockerGateway,
-  ) { }
+  ) {}
 
   async register(
     lockerId: number,
@@ -81,13 +81,14 @@ export class LockersService {
 
   async findAll(user: any) {
     const departmentId = user.dept.id;
-    const result = await this.lockerRepository.createQueryBuilder('locker')
+    const result = await this.lockerRepository
+      .createQueryBuilder('locker')
       .innerJoin('locker.department', 'department')
       .innerJoinAndSelect('locker.room', 'room')
       .innerJoinAndSelect('room.floor', 'floor')
       .innerJoinAndSelect('floor.building', 'building')
       .where('department.id = :departmentId', { departmentId })
-      .getMany()
+      .getMany();
     // const result = await this.lockerRepository.find({
     //   relations: ['room','room.floor', 'room.floor.building','department' ],
     //   where: {
@@ -98,10 +99,10 @@ export class LockersService {
   }
 
   async find(id: string) {
-    console.log('id', typeof id);
     const lockerIds = id.split(',').map(Number);
+    console.log('->lockerIds:', lockerIds);
     const result = await this.lockerRepository.findByIds(lockerIds, {
-      relations: ['location', 'department'],
+      relations: ['room', 'department', 'equipment'],
     });
     if (lockerIds.length == result.length) {
       return getResponse('00', result);
@@ -142,7 +143,9 @@ export class LockersService {
   }
 
   async validateFaceID(body: any, lockerId: string) {
-    const user = await this.userService.findByfaceid(body.filename);
+    console.log('->body:', body);
+    console.log('->lockerId:', lockerId);
+    const user = await this.userService.findByfaceid(body.fileName);
     const lockerDept = await this.findDept(lockerId);
     for (let i = 0; i < lockerDept.length; i++) {
       if (user.dept.id == lockerDept[i].id && user.status != 'Blocked') {
@@ -199,14 +202,13 @@ export class LockersService {
   }
 
   async viewRepair() {
-    const result = await this.lockerRepository.createQueryBuilder('repair')
+    const result = await this.lockerRepository
+      .createQueryBuilder('repair')
       .innerJoinAndSelect('repair.equipment', 'equipment')
       .where('equipment.status = :status', { status: 'รับเรื่องแจ้งซ่อม' })
-      .getMany()
+      .getMany();
     return result;
   }
-
-
 
   // async viewLocker(user: any) {
   //   console.log('user', user);
@@ -218,7 +220,7 @@ export class LockersService {
   //   } else if(user.role.role == 'admin') {
   //     const result = await this.lockerRepository.find({
   //       relations:['department'],
-  //       where:{ 
+  //       where:{
   //         department: user.department
   //       }
   //     });

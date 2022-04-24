@@ -227,6 +227,7 @@ export class UsersService {
       },
       relations: ['dept'],
     });
+    console.log('->findByFaceIdResult:', result);
     return result;
   }
 }

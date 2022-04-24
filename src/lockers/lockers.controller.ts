@@ -1,3 +1,4 @@
+import { getResponse } from 'src/utils/response';
 import {
   Controller,
   Get,
@@ -8,7 +9,6 @@ import {
   Delete,
   Request,
   UseGuards,
-  Query,
 } from '@nestjs/common';
 import { LockersService } from './lockers.service';
 import { CreateLockerDto } from './dto/create-locker.dto';
@@ -19,15 +19,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { LockerGateway } from './locker.gateway';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
-import { DepartmentService } from 'src/department/department.service';
 
 @ApiTags('lockers')
 @Controller('lockers')
 export class LockersController {
-  constructor(private readonly lockersService: LockersService,
+  constructor(
+    private readonly lockersService: LockersService,
     private readonly lockerGateway: LockerGateway,
-    private readonly departmentService: DepartmentService,
-  ) { }
+  ) {}
 
   @UseGuards(RolesAndLockerGuard)
   @Roles('create', 'super_admin', 'admin')
@@ -111,8 +110,9 @@ export class LockersController {
 
   @Get('addEquipment/:locker')
   async addEquipment(@Param('locker') lockerId: number) {
+    console.log('->addEquipment->lockerId:', lockerId);
     const result = await this.lockerGateway.addEquipment(lockerId);
-    return result;
+    return getResponse('00', result);
   }
 
   /*@UseGuards(RolesAndDeptGuard)
