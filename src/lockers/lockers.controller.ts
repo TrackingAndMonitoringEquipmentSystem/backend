@@ -110,7 +110,6 @@ export class LockersController {
 
   @Get('addEquipment/:locker')
   async addEquipment(@Param('locker') lockerId: number) {
-    console.log('->addEquipment->lockerId:', lockerId);
     const result = await this.lockerGateway.addEquipment(lockerId);
     return getResponse('00', result);
   }
