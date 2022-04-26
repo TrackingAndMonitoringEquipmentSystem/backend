@@ -9,9 +9,12 @@ export function getResponse(errorCode: string, data: any): ResponseDto {
     const response = ResponseConstants.find((response) => {
         return response.errorCode === errorCode;
     });
-    if (errorCode == '00') {
+    if (errorCode == '00' || errorCode == '30') {
         response.data = data;
     }
+    // else if (errorCode == '30') {
+    //     response.data == data;
+    // }
     return response;
 }
 
@@ -194,6 +197,12 @@ const ResponseConstants: ResponseDto[] = [
         successful: false,
         errorCode: '29',
         message: 'cannot create user with department and role ',
+        data: {},
+    },
+    {
+        successful: false,
+        errorCode: '30',
+        message: `data isn't correct`,
         data: {},
     },
 ]

@@ -8,8 +8,10 @@ import {
   Delete,
   UseGuards,
   Request,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { csvFileFilter, csvFileName, getCSVFile, UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateOnWeb } from './dto/create-on-web.dto';
 import { SendGridService } from '@anchan828/nest-sendgrid';
@@ -18,6 +20,11 @@ import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
 
 import { CreateByAdmin } from './dto/create-by-admin.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { createReadStream } from 'fs';
+import { UserCsv } from './dto/user-csv.dto';
+import { CsvParser } from 'nest-csv-parser';
 
 @ApiTags('users')
 @Controller('users')
@@ -25,6 +32,7 @@ export class UsersController {
   constructor(
     private service: UsersService,
     private readonly sendGrid: SendGridService,
+    private readonly csvParser: CsvParser
   ) { }
 
   @UseGuards(RolesAndDeptGuard)
@@ -125,5 +133,22 @@ export class UsersController {
   @Post('createOnWeb')
   createOnWeb(@Body() createOnWeb: CreateOnWeb[], @Request() req) {
     return this.service.createUserOnWeb(createOnWeb, req.user);
+  }
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin')
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'
+    , {
+      storage: diskStorage({
+        destination: './uploads/csv',
+        filename: csvFileName,
+      }),
+      fileFilter: csvFileFilter,
+    }
+  ),
+  )
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Request() req) {
+    return this.service.parse(req.user);
   }
 }

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In } from 'typeorm';
+import { createQueryBuilder, In } from 'typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -10,6 +10,14 @@ import * as admin from 'firebase-admin';
 import { getResponse } from 'src/utils/response';
 import { CreateByAdmin } from './dto/create-by-admin.dto';
 import { CreateOnWeb } from './dto/create-on-web.dto';
+import { CsvParser } from 'nest-csv-parser';
+import { createReadStream } from 'fs';
+import { extname, join } from 'path';
+import { UserCsv } from './dto/user-csv.dto';
+import * as EmailValidator from 'email-validator';
+import { data } from '@tensorflow/tfjs';
+import { Role } from './entities/role.entity';
+import { Department } from 'src/department/entities/department.entity';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +25,7 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private readonly sendGrid: SendGridService,
+    private readonly csvParser: CsvParser,
   ) { }
 
   findAll(): Promise<User[]> {
@@ -229,4 +238,159 @@ export class UsersService {
     });
     return result;
   }
+
+  async parse(actor: any) {
+    // Create stream from file (or get it from S3)
+    const csvPath = getCSVFile();
+    // console.log('filename: ', csvPath);
+    const stream = createReadStream(csvPath)
+    // console.log('stream: ', stream);
+    let entities: any = await this.csvParser.parse(
+      stream,
+      UserCsv,
+      null,
+      null,
+      { strict: true, separator: ',' }
+    )
+    let data = entities.list;
+    for (let i in data) {
+      let key = Object.keys(data[i]);
+      data[i].firstName = data[i][key[0]];
+      delete data[i][key[0]];
+      data[i].tel = data[i].tel.split('-').join('');
+    }
+    const role = await this.getAllRole();
+    // console.log('role: ', role);
+
+    const dept = await this.getAllDept();
+    console.log('data: ', typeof data[0].role);
+
+    var mapFunction = {
+      firstName: (...args) => {
+        // console.log('firstName: ', isNull(args[0]) || isString(args[0]))
+        return isNull(args[0]) || isString(args[0]);
+      },
+      lastName: (...args) => {
+        // console.log('lastName: ', isNull(args[0]) || isString(args[0]))
+        return isNull(args[0]) || isString(args[0]);
+      },
+      email: (...args) => {
+        // console.log('email: ', isNotEmpty(args[0]) && EmailValidator.validate(args[0]))
+        return isNotEmpty(args[0]) && EmailValidator.validate(args[0]);
+      },
+      role: (...args) => {
+        // console.log('role: ', isNotEmpty(args[0]) && checkRole(args[0], args[1]));
+        return isNotEmpty(args[0]) && checkRole(args[0], args[1]);
+      },
+      dept: (...args) => {
+        // console.log('dept: ', isNotEmpty(args[0]) && checkDept(args[0], args[2]))
+        return isNotEmpty(args[0]) && checkDept(args[0], args[2]);
+      },
+      tel: (...args) => {
+        // console.log('tel: ', isNull(args[0]) || isTel(args[0]))
+        return isNull(args[0]) || isTel(args[0]);
+      }
+    }
+
+    for (const i in data) {
+      let key = Object.keys(data[i]);
+      for (const j in key) {
+        const checkData = mapFunction[key[j]](data[i][key[j]], role, dept);
+        if (checkData == false) {
+          const err = `row ${Number(i) + 2} column ${key[j]}`;
+          throw new HttpException(getResponse('30', err), HttpStatus.FORBIDDEN);
+        }
+
+        if (key[j] == 'role') {
+          const roleName = data[i][key[j]];
+          data[i][key[j]] = await this.getRoleByName(roleName);
+          console.log('data', typeof data[i][key[j]]);
+        } else if (key[j] == 'dept') {
+          const deptName = data[i][key[j]];
+          data[i][key[j]] = await this.getDeptByName(deptName);
+        }
+      }
+    }
+    return this.createUserOnWeb(data, actor);
+  }
+
+  async getAllRole() {
+    const role = await createQueryBuilder().select("role").from(Role, "role")
+      .getMany()
+    return role;
+  }
+
+  async getRoleByName(name: string) {
+    const role = await createQueryBuilder().select("role").from(Role, "role")
+      .where("role.role = :name", { name })
+      .getOne()
+    return role.id;
+  }
+  async getAllDept() {
+    const dept = await createQueryBuilder().select("dept").from(Department, "dept")
+      .getMany()
+    return dept;
+  }
+
+  async getDeptByName(name: string) {
+    const dept = await createQueryBuilder().select("dept").from(Department, "dept")
+      .where("dept.dept_name = :name", { name })
+      .getOne()
+    return dept.id;
+  }
+}
+
+export const csvFileName = (req, file, callback) => {
+  //const name = file.originalname.split('.')[0];
+  const fileExtName = extname(file.originalname);
+  callback(null, `data${fileExtName}`);
+};
+
+export const getCSVFile = () => {
+  //const name = file.originalname.split('.')[0];
+  const filePath = join(__dirname, "..", "..", "uploads/csv", "data.csv");
+  return filePath;
+};
+
+export const csvFileFilter = (req, file, callback) => {
+  if (!file.originalname.match(/\.(csv)$/)) {
+    return callback(new Error('Only CSV files are allowed!'), false);
+  }
+  callback(null, true);
+};
+
+const isNull = (data) => {
+  return data === '';
+}
+
+const isNotEmpty = (data) => {
+  return data != '';
+}
+
+const isString = (data) => {
+  const reg = /[a-zA-z]{3,20}/;
+  return Boolean(data.match(reg));
+}
+
+const isTel = (data) => {
+  const reg = /^06|08|09\d{8}/;
+  return Boolean(data.match(reg));
+}
+
+const checkRole = (data, role) => {
+  for (let i in role) {
+    if (role[i].role == data) {
+      return true;
+    }
+  }
+  return false;
+}
+
+const checkDept = (data, dept) => {
+  for (let i in dept) {
+    if (dept[i].dept_name == data) {
+      return true;
+    }
+  }
+  return false;
 }
