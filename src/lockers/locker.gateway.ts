@@ -34,23 +34,32 @@ export class LockerGateway
       data: locker,
     });
   }
+
   async addEquipment(lockerId: number): Promise<any> {
-    console.log('->emitLocketUpdate:', lockerId);
     this.server.emit(`locker/${lockerId}`, { command: 'addEquipment' });
-    return new Promise(
+    const result = await new Promise(
       ((resolve, reject) => {
         this.addEquipmentResponseResolves[lockerId] = resolve;
       }).bind(this),
     );
+    return result;
+  }
+
+  async saveEquipment(
+    lockerId: number,
+    uuid: string,
+    macAddresses: string[],
+  ): Promise<void> {
+    console.log('->saveEquipment-> lockerId:', lockerId, 'uuid:', uuid);
+    this.server.emit(`locker/${lockerId}`, {
+      command: 'saveEquipment',
+      data: { uuid, macAddresses },
+    });
   }
 
   @SubscribeMessage('locker/addEquipment/response')
   lockerResponse(@MessageBody() data: any) {
     console.log('->data:', data[0]);
-    if (data.isSucceed) {
-      this.addEquipmentResponseResolves[data.id](data.data);
-    } else {
-      this.addEquipmentResponseResolves[data.id](data.message);
-    }
+    this.addEquipmentResponseResolves[data.id](data);
   }
 }

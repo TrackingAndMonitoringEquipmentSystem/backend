@@ -1,8 +1,9 @@
+import { CreateEquipmentDto } from './../equipment/dto/create-equipment.dto';
 import { LockerGateway } from './locker.gateway';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LocationService } from 'src/location/location.service';
-import { getResponse } from 'src/utils/response';
+import { getResponse, ResponseDto } from 'src/utils/response';
 import { In, Repository } from 'typeorm';
 import { CreateLockerDto } from './dto/create-locker.dto';
 import { UpdateLockerDto } from './dto/update-locker.dto';
@@ -13,6 +14,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Department } from 'src/department/entities/department.entity';
 import { TemporaryUserService } from 'src/temporary-user/temporary-user.service';
 import { TemporaryDeptService } from 'src/temporary-dept/temporary-dept.service';
+import { SaveEquipmentsRequestDto } from '../equipment/dto/save-equipments-request.dto';
+// import { EquipmentService } from 'src/equipment/equipment.service';
 
 @Injectable()
 export class LockersService {
@@ -143,8 +146,6 @@ export class LockersService {
   }
 
   async validateFaceID(body: any, lockerId: string) {
-    console.log('->body:', body);
-    console.log('->lockerId:', lockerId);
     const user = await this.userService.findByfaceid(body.fileName);
     const lockerDept = await this.findDept(lockerId);
     for (let i = 0; i < lockerDept.length; i++) {

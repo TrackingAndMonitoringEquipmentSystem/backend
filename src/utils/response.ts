@@ -1,8 +1,8 @@
 export class ResponseDto {
-    successful: boolean;
-    errorCode: string;
-    message: string;
-    data: any;
+  successful: boolean;
+  errorCode: string;
+  message: string;
+  data: any;
 }
 
 export function getResponse(errorCode: string, data: any): ResponseDto {
@@ -205,4 +205,16 @@ const ResponseConstants: ResponseDto[] = [
         message: `data isn't correct`,
         data: {},
     },
-]
+  {
+    successful: false,
+    errorCode: '30',
+    message: 'equipment tag_id already exited.',
+    data: {},
+  },
+  {
+    successful: false,
+    errorCode: '99',
+    message: 'Internal Server Error',
+    data: {},
+  },
+];

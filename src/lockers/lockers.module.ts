@@ -28,6 +28,6 @@ import { LockerGateway } from './locker.gateway';
   ],
   controllers: [LockersController],
   providers: [LockersService, JwtStrategy, LockerGateway],
-  exports: [LockersService],
+  exports: [LockersService, LockerGateway],
 })
 export class LockersModule {}

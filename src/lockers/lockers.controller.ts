@@ -9,6 +9,8 @@ import {
   Delete,
   Request,
   UseGuards,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { LockersService } from './lockers.service';
 import { CreateLockerDto } from './dto/create-locker.dto';
@@ -19,6 +21,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { LockerGateway } from './locker.gateway';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
+import { SaveEquipmentsRequestDto } from '../equipment/dto/save-equipments-request.dto';
 
 @ApiTags('lockers')
 @Controller('lockers')
@@ -111,7 +114,22 @@ export class LockersController {
   @Get('addEquipment/:locker')
   async addEquipment(@Param('locker') lockerId: number) {
     const result = await this.lockerGateway.addEquipment(lockerId);
-    return getResponse('00', result);
+    console.log('->result:', result);
+    if (result.isSucceed) {
+      return getResponse('00', result.data);
+    } else {
+      if (result.message === 'invalid tag') {
+        throw new HttpException(
+          { message: 'Invalid tag' },
+          HttpStatus.BAD_REQUEST,
+        );
+      } else {
+        throw new HttpException(
+          { message: 'Internal Server Error' },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 
   /*@UseGuards(RolesAndDeptGuard)
