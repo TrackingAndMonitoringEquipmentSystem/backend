@@ -45,7 +45,7 @@ export class RepairService {
     let result = await this.repairRepository.findByIds(repairIds, {
       relations: ['equipment']
     });
-    return result;
+    return getResponse('00', result);
   }
 
   // update(id: number, updateRepairDto: UpdateRepairDto) {

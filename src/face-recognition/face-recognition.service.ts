@@ -11,7 +11,7 @@ export class FaceRecognitionService {
         this.initialFaceApi();
     }
     async initialFaceApi(): Promise<void> {
-        const modelPath = path.resolve(__dirname, '../assets/models');
+        const modelPath = path.resolve(__dirname, '../file-assets/models');
         await faceapi.tf.setBackend("tensorflow");
         await faceapi.tf.enableProdMode();
         await faceapi.tf.ENV.set("DEBUG", false);
@@ -19,7 +19,7 @@ export class FaceRecognitionService {
         await faceapi.nets.faceRecognitionNet.loadFromDisk(modelPath);
         await faceapi.nets.faceLandmark68Net.loadFromDisk(modelPath);
         await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelPath);
-        const faceImagesPath = path.resolve(__dirname, '../assets/face-id');
+        const faceImagesPath = path.resolve(__dirname, '../file-assets/face-id');
         const referentFaces = [];
         const files = await fs.readdir(faceImagesPath);
         for (const fileName of files) {

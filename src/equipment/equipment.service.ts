@@ -96,7 +96,7 @@ export class EquipmentService {
       .groupBy('equipment.type')
       .addGroupBy('equipment.status')
       .getMany()
-    return result;
+    return getResponse('00', result);
   }
 
   async viewRepair() {
@@ -106,7 +106,7 @@ export class EquipmentService {
       },
       relations: ['repairs']
     });
-    return result;
+    return getResponse('00', result);
   }
 
   async groupEquipNoType(user: any) {

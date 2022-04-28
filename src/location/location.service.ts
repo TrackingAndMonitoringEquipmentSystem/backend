@@ -74,18 +74,20 @@ export class LocationService {
 
   async viewByRoom(user: any) {
     if (user.role.role == 'super_admin') {
-      return await this.roomRepository.find({
+      const result = await this.roomRepository.find({
         relations: ['floor', 'lockers', 'floor.building'],
       });
+      return getResponse('00', result);
     } else if (user.role.role == 'admin') {
       const departmentId = user.dept.id;
-      return await this.roomRepository.createQueryBuilder('room')
+      const result = await this.roomRepository.createQueryBuilder('room')
         .innerJoinAndSelect('room.floor', 'floor')
         .innerJoinAndSelect('floor.building', 'building')
         .innerJoinAndSelect('room.lockers', 'lockers')
         .innerJoin('lockers.department', 'department')
         .where('department.id = :departmentId', { departmentId })
         .getMany();
+      return getResponse('00', result)
     }
   }
 
@@ -95,7 +97,7 @@ export class LocationService {
     console.log('-->type:', typeId);
     console.log('-->status', status);
     if (typeId == 0) {
-      console.log('1');
+      // console.log('1');
       if (status == 'ยืมอยู่') {
         result = await this.roomRepository.createQueryBuilder('room')
           .innerJoinAndSelect('room.floor', 'floor')
@@ -134,9 +136,9 @@ export class LocationService {
           .andWhere('equipment.status = :status', { status: status })
           .getMany()
       }
-      return result;
+      return getResponse('00', result);
     } else if (typeId > 0) {
-      console.log('2');
+      // console.log('2');
       if (status == 'ยืมอยู่') {
         result = await this.roomRepository.createQueryBuilder('room')
           .innerJoinAndSelect('room.floor', 'floor')
@@ -175,7 +177,7 @@ export class LocationService {
           .andWhere('equipment.status = :status', { status: status })
           .getMany()
       }
-      return result;
+      return getResponse('00', result);
     }
   }
 }

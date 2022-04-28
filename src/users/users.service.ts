@@ -243,7 +243,7 @@ export class UsersService {
   }
 
   async addFaceid(id: number, imagebase64: string, actor: any) {
-    const fileName = this.fileAssetsService.saveImage(imagebase64);
+    const fileName = this.fileAssetsService.saveFaceeId(imagebase64, id);
     await this.usersRepository.update(id, { face_id: fileName, updated_by: actor });
     return getResponse('00', null);
   }
