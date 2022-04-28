@@ -207,7 +207,7 @@ const ResponseConstants: ResponseDto[] = [
   },
   {
     successful: false,
-    errorCode: '30',
+    errorCode: '31',
     message: 'equipment tag_id already exited.',
     data: {},
   },

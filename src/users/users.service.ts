@@ -18,7 +18,7 @@ import * as EmailValidator from 'email-validator';
 import { Role } from './entities/role.entity';
 import { Department } from 'src/department/entities/department.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from 'fs';
 import { FileAssetsService } from 'src/file-assets/file-assets.service';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class UsersService {
     private readonly sendGrid: SendGridService,
     private readonly csvParser: CsvParser,
     private readonly fileAssetsService: FileAssetsService,
-  ) { }
+  ) {}
 
   async findAll(user: any) {
     if (user.role.role == 'super_admin') {
@@ -114,10 +114,16 @@ export class UsersService {
       hasPermission = true;
     } else if (actor.role.role == 'admin') {
       for (let i = 0; i < createOnWeb.length; i++) {
-        if (createOnWeb[i].dept == actor.dept.id && (Number(createOnWeb[i].role) == 2 || Number(createOnWeb[i].role) == 5)) {
+        if (
+          createOnWeb[i].dept == actor.dept.id &&
+          (Number(createOnWeb[i].role) == 2 || Number(createOnWeb[i].role) == 5)
+        ) {
           hasPermission = true;
         } else {
-          throw new HttpException(getResponse('29', null), HttpStatus.FORBIDDEN);
+          throw new HttpException(
+            getResponse('29', null),
+            HttpStatus.FORBIDDEN,
+          );
         }
       }
     }
@@ -329,8 +335,11 @@ export class UsersService {
   }
 
   async addFaceid(id: number, imagebase64: string, actor: any) {
-    const fileName = this.fileAssetsService.saveFaceeId(imagebase64, id);
-    await this.usersRepository.update(id, { face_id: fileName, updated_by: actor });
+    const fileName = this.fileAssetsService.saveFaceId(imagebase64, id);
+    await this.usersRepository.update(id, {
+      face_id: fileName,
+      updated_by: actor,
+    });
     return getResponse('00', null);
   }
 
@@ -338,15 +347,15 @@ export class UsersService {
     // Create stream from file (or get it from S3)
     const csvPath = getCSVFile();
     // console.log('filename: ', csvPath);
-    const stream = createReadStream(csvPath)
+    const stream = createReadStream(csvPath);
     // console.log('stream: ', stream);
     let entities: any = await this.csvParser.parse(
       stream,
       UserCsv,
       null,
       null,
-      { strict: true, separator: ',' }
-    )
+      { strict: true, separator: ',' },
+    );
     let data = entities.list;
     for (let i in data) {
       let key = Object.keys(data[i]);
@@ -384,8 +393,8 @@ export class UsersService {
       tel: (...args) => {
         // console.log('tel: ', isNull(args[0]) || isTel(args[0]))
         return isNull(args[0]) || isTel(args[0]);
-      }
-    }
+      },
+    };
 
     for (const i in data) {
       let key = Object.keys(data[i]);
@@ -410,27 +419,35 @@ export class UsersService {
   }
 
   async getAllRole() {
-    const role = await createQueryBuilder().select("role").from(Role, "role")
-      .getMany()
+    const role = await createQueryBuilder()
+      .select('role')
+      .from(Role, 'role')
+      .getMany();
     return role;
   }
 
   async getRoleByName(name: string) {
-    const role = await createQueryBuilder().select("role").from(Role, "role")
-      .where("role.role = :name", { name })
-      .getOne()
+    const role = await createQueryBuilder()
+      .select('role')
+      .from(Role, 'role')
+      .where('role.role = :name', { name })
+      .getOne();
     return role.id;
   }
   async getAllDept() {
-    const dept = await createQueryBuilder().select("dept").from(Department, "dept")
-      .getMany()
+    const dept = await createQueryBuilder()
+      .select('dept')
+      .from(Department, 'dept')
+      .getMany();
     return dept;
   }
 
   async getDeptByName(name: string) {
-    const dept = await createQueryBuilder().select("dept").from(Department, "dept")
-      .where("dept.dept_name = :name", { name })
-      .getOne()
+    const dept = await createQueryBuilder()
+      .select('dept')
+      .from(Department, 'dept')
+      .where('dept.dept_name = :name', { name })
+      .getOne();
     return dept.id;
   }
 }
@@ -443,7 +460,7 @@ export const csvFileName = (req, file, callback) => {
 
 export const getCSVFile = () => {
   //const name = file.originalname.split('.')[0];
-  const filePath = join(__dirname, "..", "..", "uploads/csv", "data.csv");
+  const filePath = join(__dirname, '..', '..', 'uploads/csv', 'data.csv');
   return filePath;
 };
 
@@ -456,21 +473,21 @@ export const csvFileFilter = (req, file, callback) => {
 
 const isNull = (data) => {
   return data === '';
-}
+};
 
 const isNotEmpty = (data) => {
   return data != '';
-}
+};
 
 const isString = (data) => {
   const reg = /[a-zA-z]{3,20}/;
   return Boolean(data.match(reg));
-}
+};
 
 const isTel = (data) => {
   const reg = /^06|08|09\d{8}/;
   return Boolean(data.match(reg));
-}
+};
 
 const checkRole = (data, role) => {
   for (let i in role) {
@@ -479,7 +496,7 @@ const checkRole = (data, role) => {
     }
   }
   return false;
-}
+};
 
 const checkDept = (data, dept) => {
   for (let i in dept) {
@@ -488,4 +505,4 @@ const checkDept = (data, dept) => {
     }
   }
   return false;
-}
+};
