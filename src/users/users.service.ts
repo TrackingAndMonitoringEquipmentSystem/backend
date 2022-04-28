@@ -15,9 +15,11 @@ import { createReadStream } from 'fs';
 import { extname, join } from 'path';
 import { UserCsv } from './dto/user-csv.dto';
 import * as EmailValidator from 'email-validator';
-import { data } from '@tensorflow/tfjs';
 import { Role } from './entities/role.entity';
 import { Department } from 'src/department/entities/department.entity';
+import { v4 as uuidv4 } from 'uuid';
+import { readFileSync, writeFileSync } from "fs";
+import { FileAssetsService } from 'src/file-assets/file-assets.service';
 
 @Injectable()
 export class UsersService {
@@ -26,6 +28,7 @@ export class UsersService {
     private usersRepository: Repository<User>,
     private readonly sendGrid: SendGridService,
     private readonly csvParser: CsvParser,
+    private readonly fileAssetsService: FileAssetsService,
   ) { }
 
   findAll(): Promise<User[]> {
@@ -237,6 +240,12 @@ export class UsersService {
       relations: ['dept'],
     });
     return result;
+  }
+
+  async addFaceid(id: number, imagebase64: string, actor: any) {
+    const fileName = this.fileAssetsService.saveImage(imagebase64);
+    await this.usersRepository.update(id, { face_id: fileName, updated_by: actor });
+    return getResponse('00', null);
   }
 
   async parse(actor: any) {

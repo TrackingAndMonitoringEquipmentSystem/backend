@@ -5,6 +5,7 @@ import { UsersController } from './users.controller';
 import { User } from './entities/user.entity';
 import { CsvModule } from 'nest-csv-parser';
 import { MulterModule } from '@nestjs/platform-express';
+import { FileAssetsModule } from 'src/file-assets/file-assets.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { MulterModule } from '@nestjs/platform-express';
     MulterModule.register({
       dest: './uploads/csv',
     }),
+    FileAssetsModule
   ],
   controllers: [UsersController],
   providers: [UsersService],

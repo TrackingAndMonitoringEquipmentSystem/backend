@@ -26,6 +26,9 @@ import { GroupBorrowModule } from './group-borrow/group-borrow.module';
 import { ReportModule } from './report/report.module';
 import { RepairModule } from './repair/repair.module';
 import { GroupRepairModule } from './group-repair/group-repair.module';
+import { FileAssetsModule } from './file-assets/file-assets.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -70,8 +73,12 @@ import { GroupRepairModule } from './group-repair/group-repair.module';
     ReportModule,
     RepairModule,
     GroupRepairModule,
+    // FileAssetsModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, 'file-assets'),
+    })
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

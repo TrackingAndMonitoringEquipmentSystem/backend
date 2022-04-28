@@ -136,6 +136,20 @@ export class UsersController {
   }
 
   @UseGuards(RolesAndDeptGuard)
+  @Roles(
+    'self',
+    'super_admin',
+    'admin',
+    'master_maintainer',
+    'maintainer',
+    'user',
+  )
+  @Post('addFaceId/:id')
+  addFaceId(@Body() body: any, @Request() req, @Param('id') id: number) {
+    return this.service.addFaceid(id, body.imagebase64, req.user);
+  }
+
+  @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'
