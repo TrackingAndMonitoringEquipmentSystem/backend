@@ -30,29 +30,7 @@ export class FaceRecognitionService {
         new faceapi.LabeledFaceDescriptors(fileName, [result.descriptor]),
       );
     }
-    async initialFaceApi(): Promise<void> {
-        const modelPath = path.resolve(__dirname, '../file-assets/models');
-        await faceapi.tf.setBackend("tensorflow");
-        await faceapi.tf.enableProdMode();
-        await faceapi.tf.ENV.set("DEBUG", false);
-        await faceapi.tf.ready();
-        await faceapi.nets.faceRecognitionNet.loadFromDisk(modelPath);
-        await faceapi.nets.faceLandmark68Net.loadFromDisk(modelPath);
-        await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelPath);
-        const faceImagesPath = path.resolve(__dirname, '../file-assets/face-id');
-        const referentFaces = [];
-        const files = await fs.readdir(faceImagesPath);
-        for (const fileName of files) {
-            const file = await fs.readFile(path.join(faceImagesPath, fileName),);
-            const image = await this.parseImage(file);
-            const result = await faceapi
-                .detectSingleFace(image)
-                .withFaceLandmarks()
-                .withFaceDescriptor();
-            referentFaces.push(result);
-        }
-        this.faceMatcher = new faceapi.FaceMatcher(referentFaces, 0.6);
-    }
+  }
 
   parseImage(file: any): any {
     const decoded = tf.node.decodeImage(file);

@@ -122,7 +122,7 @@ export class EquipmentService {
       .where('department.id = :departmentId', { departmentId })
       .groupBy('equipment.type')
       .addGroupBy('equipment.status')
-      .getMany()
+      .getMany();
     return getResponse('00', result);
   }
 
