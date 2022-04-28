@@ -73,12 +73,12 @@ import { join } from 'path';
     ReportModule,
     RepairModule,
     GroupRepairModule,
-    // FileAssetsModule,
+    FileAssetsModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, 'assets'),
-    })
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
