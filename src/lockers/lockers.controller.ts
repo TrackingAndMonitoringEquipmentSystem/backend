@@ -21,7 +21,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { LockerGateway } from './locker.gateway';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
-import { SaveEquipmentsRequestDto } from '../equipment/dto/save-equipments-request.dto';
 
 @ApiTags('lockers')
 @Controller('lockers')

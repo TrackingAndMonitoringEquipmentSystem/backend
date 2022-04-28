@@ -105,7 +105,7 @@ export class LockersService {
     const lockerIds = id.split(',').map(Number);
     console.log('->lockerIds:', lockerIds);
     const result = await this.lockerRepository.findByIds(lockerIds, {
-      relations: ['room', 'department', 'equipment'],
+      relations: ['room', 'department', 'equipment', 'equipment.type'],
     });
     if (lockerIds.length == result.length) {
       return getResponse('00', result);

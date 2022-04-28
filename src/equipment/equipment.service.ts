@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FileAssetsService } from 'src/file-assets/file-assets.service';
 import { LockerGateway } from 'src/lockers/locker.gateway';
 import { UsersService } from 'src/users/users.service';
 import { getResponse, ResponseDto } from 'src/utils/response';
@@ -16,6 +17,7 @@ export class EquipmentService {
     private equipmentRepository: Repository<Equipment>,
     private readonly usersService: UsersService,
     private readonly lockerGateway: LockerGateway,
+    private readonly fileAssetsService: FileAssetsService,
   ) {}
   async create(createEquipmentDto: CreateEquipmentDto[], actor) {
     const user = await this.usersService.findByEmail(actor);
@@ -162,13 +164,14 @@ export class EquipmentService {
   ): Promise<ResponseDto> {
     const createEquipmentDtos = [];
     const macAddresses: string[] = [];
+
     saveEquipmentsRequestDto.equipments.forEach((equipment) => {
       macAddresses.push(equipment.macAddress);
       createEquipmentDtos.push({
         name: equipment.name,
         tag_id: equipment.macAddress,
         status: 'พร้อมใช้งาน',
-        equip_pic: equipment.base64Image,
+        equip_pic: this.fileAssetsService.saveImage(equipment.base64Image),
         duration: equipment.duration,
         type: { id: equipment.typeId },
         locker: { locker_id: saveEquipmentsRequestDto.lockerId },
