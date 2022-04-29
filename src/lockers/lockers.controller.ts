@@ -29,7 +29,7 @@ export class LockersController {
   constructor(
     private readonly lockersService: LockersService,
     private readonly lockerGateway: LockerGateway,
-  ) {}
+  ) { }
 
   @UseGuards(RolesAndLockerGuard)
   @Roles('create', 'super_admin', 'admin')
@@ -43,7 +43,7 @@ export class LockersController {
   }
 
   @UseGuards(RolesAndDeptGuard)
-  @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
+  @Roles('super_admin', 'admin')
   @Get()
   viewAll(@Request() req) {
     return this.lockersService.findAll(req.user);
@@ -144,5 +144,12 @@ export class LockersController {
   @Get('viewRepair')
   viewRepair() {
     return this.lockersService.viewRepair();
+  }
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin')
+  @Get('getUnregister')
+  getUnregister() {
+    return this.lockersService.getUnRegisterLocker();
   }
 }

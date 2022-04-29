@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LockerGateway } from 'src/lockers/locker.gateway';
 import { UsersService } from 'src/users/users.service';
 import { getResponse, ResponseDto } from 'src/utils/response';
-import { QueryFailedError, Repository } from 'typeorm';
+import { In, QueryFailedError, Repository } from 'typeorm';
 import { CreateEquipmentDto } from './dto/create-equipment.dto';
 import { SaveEquipmentsRequestDto } from './dto/save-equipments-request.dto';
 import { UpdateEquipmentDto } from './dto/update-equipment.dto';
@@ -66,6 +66,20 @@ export class EquipmentService {
     }
   }
 
+  async findByTagIds(tag_ids: any) {
+    const result = await this.equipmentRepository.find({
+      where: {
+        tag_id: In(tag_ids)
+      },
+      relations: ['type']
+    })
+    if (result.length == tag_ids.length) {
+      return result;
+    } else {
+      throw new HttpException(getResponse('31', null), HttpStatus.FORBIDDEN);
+    }
+  }
+
   async update(id: number, updateEquipmentDto: UpdateEquipmentDto, actor) {
     const user = await this.usersService.findByEmail(actor);
     await this.equipmentRepository.update(id, {
@@ -116,7 +130,7 @@ export class EquipmentService {
     const result = await this.equipmentRepository
       .createQueryBuilder('equipment')
       .addSelect('COUNT(equipment.equipment_id) AS Count')
-      .innerJoin('equipment.locker', 'locker')
+      .innerJoinAndSelect('equipment.locker', 'locker')
       .innerJoinAndSelect('equipment.type', 'type')
       .innerJoin('locker.department', 'department')
       .where('department.id = :departmentId', { departmentId })

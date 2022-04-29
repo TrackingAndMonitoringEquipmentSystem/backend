@@ -62,7 +62,7 @@ export class LocationService {
 
   async getAllBuilding() {
     const result = await this.buildingRepository.find({
-      relations: ['floors', 'floors.rooms'],
+      relations: ['floors', 'floors.rooms', 'floors.rooms.lockers'],
     });
     return getResponse('00', result);
   }

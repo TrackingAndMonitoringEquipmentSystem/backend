@@ -3,26 +3,27 @@ import { Roles } from 'src/utils/guard/roles.decorator';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
 import { BorrowReturnService } from './borrow-return.service';
 import { CreateBorrowReturnDto } from './dto/create-borrow-return.dto';
+import { ReturnDto } from './dto/return.dto';
 import { UpdateBorrowReturnDto } from './dto/update-borrow-return.dto';
 
 @Controller('borrow')
 export class BorrowReturnController {
-  constructor(private readonly borrowReturnService: BorrowReturnService) {}
+  constructor(private readonly borrowReturnService: BorrowReturnService) { }
 
-  @UseGuards(RolesAndDeptGuard)
-  @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
-  @Post(':id')
-  borrow(@Param('id') ids:string, @Req() req) {
-    return this.borrowReturnService.borrow(ids, req.actorId );
+  // @UseGuards(RolesAndDeptGuard)
+  // @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
+  @Post()
+  borrow(@Body() createBorrowRetunDto: CreateBorrowReturnDto) {
+    return this.borrowReturnService.borrow(createBorrowRetunDto);
   }
 
-  @UseGuards(RolesAndDeptGuard)
-  @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
-  @Patch('return/:id')
-  return(@Param('id') ids: string,@Req() req) {
-    return this.borrowReturnService.return(ids, req.actorId);
+  // @UseGuards(RolesAndDeptGuard)
+  // @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
+  @Patch('return')
+  return(@Body() returnDto: ReturnDto) {
+    return this.borrowReturnService.return(returnDto);
   }
-  
+
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
   @Get('viewAllBorrow')
@@ -43,7 +44,7 @@ export class BorrowReturnController {
   viewHistory(@Param('equipmentId') id: number) {
     return this.borrowReturnService.viewHistory(id);
   }
-  
+
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

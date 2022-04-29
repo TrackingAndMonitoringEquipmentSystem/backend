@@ -213,6 +213,12 @@ const ResponseConstants: ResponseDto[] = [
   },
   {
     successful: false,
+    errorCode: '31',
+    message: `tag_ids don't match`,
+    data: {},
+  },
+  {
+    successful: false,
     errorCode: '99',
     message: 'Internal Server Error',
     data: {},

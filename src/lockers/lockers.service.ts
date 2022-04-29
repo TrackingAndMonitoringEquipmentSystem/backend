@@ -83,22 +83,27 @@ export class LockersService {
   }
 
   async findAll(user: any) {
-    const departmentId = user.dept.id;
-    const result = await this.lockerRepository
-      .createQueryBuilder('locker')
-      .innerJoin('locker.department', 'department')
-      .innerJoinAndSelect('locker.room', 'room')
-      .innerJoinAndSelect('room.floor', 'floor')
-      .innerJoinAndSelect('floor.building', 'building')
-      .where('department.id = :departmentId', { departmentId })
-      .getMany();
-    // const result = await this.lockerRepository.find({
-    //   relations: ['room','room.floor', 'room.floor.building','department' ],
-    //   where: {
-    //     department: department
-    //   }
-    // })
-    return getResponse('00', result);
+    if (user.role.role == 'super_admin') {
+      const result = await this.lockerRepository.find({
+        relations: ['room', 'room.floor', 'room.floor.building'],
+        where: {
+          status: 'registered'
+        }
+      })
+      return getResponse('00', result);
+    } else if (user.role.role == 'admin') {
+      const departmentId = user.dept.id;
+      const result = await this.lockerRepository
+        .createQueryBuilder('locker')
+        .innerJoin('locker.department', 'department')
+        .innerJoinAndSelect('locker.room', 'room')
+        .innerJoinAndSelect('room.floor', 'floor')
+        .innerJoinAndSelect('floor.building', 'building')
+        .where('department.id = :departmentId', { departmentId })
+        // .where('locker.status = :status', { status: 'registered' })
+        .getMany();
+      return getResponse('00', result);
+    }
   }
 
   async find(id: string) {
@@ -208,6 +213,15 @@ export class LockersService {
       .innerJoinAndSelect('repair.equipment', 'equipment')
       .where('equipment.status = :status', { status: 'รับเรื่องแจ้งซ่อม' })
       .getMany();
+    return getResponse('00', result);
+  }
+
+  async getUnRegisterLocker() {
+    const result = await this.lockerRepository.find({
+      where: {
+        status: 'unregister'
+      }
+    })
     return getResponse('00', result);
   }
 

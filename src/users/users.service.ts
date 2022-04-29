@@ -200,6 +200,25 @@ export class UsersService {
       });
   }
 
+  async sendNotiToUser(userId: number, data: any) {
+    const user = await this.usersRepository.findOne(userId);
+    const message = {
+      data: {
+        Nick: data
+      },
+      token: user.fcm_token
+    };
+    admin
+      .messaging()
+      .send(message)
+      .then((response) => {
+        console.log('Successfully sent message:', response);
+      })
+      .catch((error) => {
+        console.log('Error sending message:', error);
+      });
+  }
+
   async block(id: number, actorId) {
     const user = await this.usersRepository.findOne({
       where: { id: id },
@@ -239,7 +258,6 @@ export class UsersService {
       },
       relations: ['dept'],
     });
-    console.log('->findByFaceIdResult:', result);
     return result;
   }
 

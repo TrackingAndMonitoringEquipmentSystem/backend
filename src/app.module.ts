@@ -75,7 +75,7 @@ import { join } from 'path';
     GroupRepairModule,
     // FileAssetsModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, 'file-assets'),
+      rootPath: join(__dirname, 'assets'),
     })
   ],
   controllers: [AppController],

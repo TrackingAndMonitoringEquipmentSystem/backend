@@ -1,9 +1,10 @@
 import { IsNotEmpty } from "class-validator";
+import { GroupBorrow } from "src/group-borrow/entities/group-borrow.entity";
 import { User } from "src/users/entities/user.entity";
 
-export class CreateBorrowReturnDto {
+export class ReturnDto {
     @IsNotEmpty()
-    tag_ids: string;
+    groupId: GroupBorrow;
 
     @IsNotEmpty()
     userId: User;

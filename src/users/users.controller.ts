@@ -149,6 +149,11 @@ export class UsersController {
     return this.service.addFaceid(id, body.imagebase64, req.user);
   }
 
+  @Post('sendNotiToUser')
+  sendNoti(@Body() body) {
+    return this.service.sendNotiToUser(body.userId, body.data);
+  }
+
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
   @Post('upload')

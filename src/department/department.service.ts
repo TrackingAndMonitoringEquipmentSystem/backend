@@ -28,7 +28,7 @@ export class DepartmentService {
 
   async viewAll() {
     const result = await this.deptRepository.find({
-      relations: ['created_by', 'updated_by'],
+      relations: ['created_by', 'updated_by', 'locker'],
     });
     return getResponse('00', result);
   }
