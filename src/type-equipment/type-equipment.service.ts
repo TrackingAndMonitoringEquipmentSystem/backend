@@ -81,7 +81,7 @@ export class TypeEquipmentService {
       });
       const equipNoType = { id: null, name: null, duration: null, equipment: await this.equipmentService.findEquipmentNoType() };
       equip.push(equipNoType);
-      return equip;
+      return getResponse('00', equip);
     } else if (user.role.role == 'admin') {
       const departmentId = user.dept.id;
 
@@ -104,7 +104,7 @@ export class TypeEquipmentService {
         .where('equipment.typeId IS NULL')
         .getMany()
       equip.push({ id: null, name: null, duration: null, equipment: equipNoType });
-      return equip;
+      return getResponse('00', equip);
     }
   }
 
@@ -127,7 +127,7 @@ export class TypeEquipmentService {
     for (let i in equipNoType) {
       equipment.push(equipNoType[i]);
     }
-    return equipment;
+    return getResponse('00', equipment);
   }
 
 

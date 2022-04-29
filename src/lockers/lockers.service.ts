@@ -29,7 +29,7 @@ export class LockersService {
     private readonly tempDeptService: TemporaryDeptService,
     private jwtService: JwtService,
     private lockerGateway: LockerGateway,
-  ) {}
+  ) { }
 
   async register(
     lockerId: number,
@@ -208,7 +208,7 @@ export class LockersService {
       .innerJoinAndSelect('repair.equipment', 'equipment')
       .where('equipment.status = :status', { status: 'รับเรื่องแจ้งซ่อม' })
       .getMany();
-    return result;
+    return getResponse('00', result);
   }
 
   // async viewLocker(user: any) {

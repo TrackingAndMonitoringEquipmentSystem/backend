@@ -96,7 +96,7 @@ export class BorrowReturnService {
         status: status,
       });
     }
-    return result;
+    return getResponse('00', result);
   }
 
   async remove(id: number) {
@@ -111,6 +111,6 @@ export class BorrowReturnService {
         equipment: equipment
       }
     })
-    return result;
+    return getResponse('00', result);
   }
 }

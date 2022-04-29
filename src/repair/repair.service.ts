@@ -92,6 +92,7 @@ export class RepairService {
         status: 'ยกเลิก',
       })
     }
+    return getResponse('00', null);
   }
 
   async repair(id: number, maintainer: any) {

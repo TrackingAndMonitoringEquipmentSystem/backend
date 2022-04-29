@@ -16,7 +16,7 @@ export class EquipmentService {
     private equipmentRepository: Repository<Equipment>,
     private readonly usersService: UsersService,
     private readonly lockerGateway: LockerGateway,
-  ) {}
+  ) { }
   async create(createEquipmentDto: CreateEquipmentDto[], actor) {
     const user = await this.usersService.findByEmail(actor);
     const equipmentResponses = [];

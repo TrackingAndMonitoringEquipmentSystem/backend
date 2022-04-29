@@ -54,6 +54,6 @@ export class GroupRepairService {
       .innerJoin('repairs.equipment', 'equipment')
       .where('equipment.equipment_id = :equipmentId', { equipmentId })
       .getMany()
-    return result;
+    return getResponse('00', result);
   }
 }
