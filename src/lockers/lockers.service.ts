@@ -26,7 +26,7 @@ export class LockersService {
     private readonly tempDeptService: TemporaryDeptService,
     private jwtService: JwtService,
     private lockerGateway: LockerGateway,
-  ) { }
+  ) {}
 
   async register(
     lockerId: number,
@@ -84,9 +84,9 @@ export class LockersService {
       const result = await this.lockerRepository.find({
         relations: ['room', 'room.floor', 'room.floor.building'],
         where: {
-          status: 'registered'
-        }
-      })
+          status: 'registered',
+        },
+      });
       return getResponse('00', result);
     } else if (user.role.role == 'admin') {
       const departmentId = user.dept.id;
@@ -99,6 +99,7 @@ export class LockersService {
         .where('department.id = :departmentId', { departmentId })
         // .where('locker.status = :status', { status: 'registered' })
         .getMany();
+      console.log('->findAll result:', result);
       return getResponse('00', result);
     }
   }
@@ -107,9 +108,16 @@ export class LockersService {
     const lockerIds = id.split(',').map(Number);
     console.log('->lockerIds:', lockerIds);
     const result = await this.lockerRepository.findByIds(lockerIds, {
-      relations: ['room', 'department', 'equipment'],
+      relations: [
+        'room',
+        'department',
+        'equipment',
+        'room.floor',
+        'room.floor.building',
+      ],
     });
     if (lockerIds.length == result.length) {
+      console.log('->result:', result);
       return getResponse('00', result);
     } else {
       throw new HttpException(getResponse('12', null), HttpStatus.FORBIDDEN);
@@ -218,9 +226,9 @@ export class LockersService {
   async getUnRegisterLocker() {
     const result = await this.lockerRepository.find({
       where: {
-        status: 'unregister'
-      }
-    })
+        status: 'unregister',
+      },
+    });
     return getResponse('00', result);
   }
 

@@ -29,7 +29,7 @@ export class LockersController {
   constructor(
     private readonly lockersService: LockersService,
     private readonly lockerGateway: LockerGateway,
-  ) { }
+  ) {}
 
   @UseGuards(RolesAndLockerGuard)
   @Roles('create', 'super_admin', 'admin')
@@ -88,7 +88,7 @@ export class LockersController {
 
   @UseGuards(RolesAndLockerGuard)
   @Roles('super_admin', 'admin', 'tempUser')
-  @Post('getOpenToken/:locker')
+  @Get('getOpenToken/:locker')
   getOpenToken(@Request() req, @Param('locker') id: string) {
     return this.lockersService.getOpenToken(req.actor, id);
   }
