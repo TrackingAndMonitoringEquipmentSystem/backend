@@ -30,6 +30,7 @@ export class FaceRecognitionService {
         new faceapi.LabeledFaceDescriptors(fileName, [result.descriptor]),
       );
     }
+    this.faceMatcher = new faceapi.FaceMatcher(referentFaces, 0.7);
   }
 
   parseImage(file: any): any {
@@ -63,7 +64,7 @@ export class FaceRecognitionService {
             lockerId.toString(),
           );
           if (checkPermission.successful) {
-            return { message: 'Granted' };
+            return { message: 'Granted', userId: result.label.split('.')[0] };
           } else {
             return { message: 'Not Had Permission' };
           }

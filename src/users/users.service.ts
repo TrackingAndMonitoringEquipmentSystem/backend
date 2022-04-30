@@ -252,6 +252,7 @@ export class UsersService {
   }
 
   async findByfaceid(filename: string) {
+    console.log('->filename:', filename);
     const result = await this.usersRepository.findOne({
       where: {
         face_id: filename,
