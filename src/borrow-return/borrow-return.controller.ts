@@ -19,9 +19,14 @@ export class BorrowReturnController {
 
   // @UseGuards(RolesAndDeptGuard)
   // @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
-  @Patch('return')
-  return(@Body() returnDto: ReturnDto) {
-    return this.borrowReturnService.return(returnDto);
+  @Patch('return/:groupId')
+  return(@Param('groupId') id: number) {
+    return this.borrowReturnService.return(id);
+  }
+
+  @Get('viewGroup/:userId')
+  viewGroup(@Param('userId') id: number) {
+    return this.borrowReturnService.findGroupByUserId(id);
   }
 
   @UseGuards(RolesAndDeptGuard)
@@ -45,6 +50,10 @@ export class BorrowReturnController {
     return this.borrowReturnService.viewHistory(id);
   }
 
+  @Get('viewByGroup/:groupId')
+  viewByGroup(@Param('groupId') id: number) {
+    return this.borrowReturnService.viewByGroupId(id);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

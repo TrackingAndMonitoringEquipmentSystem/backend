@@ -49,9 +49,33 @@ export class EquipmentService {
     return getResponse('00', equipmentResponses);
   }
 
-  async findAll() {
-    const result = await this.equipmentRepository.find();
-    return getResponse('00', result);
+  async findAll(user: any) {
+    if (user.role.role == 'super_admin') {
+      const result = await this.equipmentRepository.find({
+        relations: ['type', 'locker'],
+      });
+      return getResponse('00', result);
+    } else if (user.role.role == 'admin') {
+      const departmentId = user.dept.id;
+      let result = await this.equipmentRepository
+        .createQueryBuilder('equipment')
+        .innerJoinAndSelect('equipment.locker', 'locker')
+        .innerJoinAndSelect('equipment.type', 'type')
+        .innerJoin('locker.department', 'department')
+        .where('department.id = :departmentId', { departmentId })
+        .getMany();
+      let equipNoType = await this.equipmentRepository
+        .createQueryBuilder('equipment')
+        .innerJoinAndSelect('equipment.locker', 'locker')
+        // .innerJoin('equipment.type', 'type')
+        .innerJoin('locker.department', 'department')
+        .where('department.id = :departmentId', { departmentId })
+        .andWhere('equipment.type IS NULL')
+        .getMany();
+      result = result.concat(equipNoType);
+      return getResponse('00', result);
+    }
+
   }
 
   async find(id: string) {
@@ -208,4 +232,5 @@ export class EquipmentService {
       throw result;
     }
   }
+
 }

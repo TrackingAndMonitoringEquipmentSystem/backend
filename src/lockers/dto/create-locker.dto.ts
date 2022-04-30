@@ -8,7 +8,6 @@ export class CreateLockerDto {
   @IsOptional()
   num_camera: number;
 
-  @IsNotEmpty()
   description: string;
 
   @IsNotEmpty()

@@ -18,7 +18,7 @@ import { SaveEquipmentsRequestDto } from './dto/save-equipments-request.dto';
 
 @Controller('equipment')
 export class EquipmentController {
-  constructor(private readonly equipmentService: EquipmentService) {}
+  constructor(private readonly equipmentService: EquipmentService) { }
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
@@ -28,10 +28,10 @@ export class EquipmentController {
   }
 
   @UseGuards(RolesAndDeptGuard)
-  @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
+  @Roles('super_admin', 'admin')
   @Get()
   findAll(@Request() req) {
-    return this.equipmentService.viewAll(req.user);
+    return this.equipmentService.findAll(req.user);
   }
 
   @Get('viewByEquipmentId/:id')

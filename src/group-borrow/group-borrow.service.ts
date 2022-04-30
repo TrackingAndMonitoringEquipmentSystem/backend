@@ -30,6 +30,19 @@ export class GroupBorrowService {
     return getResponse('00', result);
   }
 
+  async viewGroup(userId: number) {
+    console.log('userId: ', userId);
+    const result = await this.groupBorrowRepo.createQueryBuilder('group')
+      .innerJoinAndSelect('group.borrowReturns', 'borrowReturns')
+      .innerJoin('borrowReturns.user', 'user')
+      .innerJoinAndSelect('borrowReturns.equipment', 'equipment')
+      .innerJoinAndSelect('equipment.locker', 'locker')
+      .where('user.id = :userId', { userId })
+      .andWhere('borrowReturns.status = :status', { status: 'ยืมอยู่' })
+      .getMany()
+    return getResponse('00', result);
+  }
+
   async findOne(id: number) {
     const result = await this.groupBorrowRepo.findOne(id, {
       relations: ['equipment']

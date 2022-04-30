@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { createQueryBuilder, In } from 'typeorm';
+import { createQueryBuilder, In, Not } from 'typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -31,8 +31,24 @@ export class UsersService {
     private readonly fileAssetsService: FileAssetsService,
   ) { }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  async findAll(user: any) {
+    if (user.role.role == 'super_admin') {
+      const result = await this.usersRepository.find({
+        relations: ['role', 'dept']
+      })
+      return getResponse('00', result);
+    } else if (user.role.role == 'admin') {
+      const departmentId = user.dept.id;
+      const result = await this.usersRepository.find({
+        relations: ['role', 'dept'],
+        where: {
+          dept: departmentId,
+          role: Not(1)
+        }
+      })
+      return getResponse('00', result);
+    }
+
   }
 
   findById(id: number): Promise<User> {
@@ -203,11 +219,10 @@ export class UsersService {
   async sendNotiToUser(userId: number, data: any) {
     const user = await this.usersRepository.findOne(userId);
     const message = {
-      data: {
-        Nick: data
-      },
+      ...data,
       token: user.fcm_token
-    };
+    }
+    console.log('data: ', data);
     admin
       .messaging()
       .send(message)

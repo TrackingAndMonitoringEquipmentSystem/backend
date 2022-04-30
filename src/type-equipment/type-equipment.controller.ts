@@ -7,17 +7,20 @@ import { Roles } from 'src/utils/guard/roles.decorator';
 
 
 
-@UseGuards(RolesAndDeptGuard)
+
 @Controller('type-equipment')
 export class TypeEquipmentController {
   constructor(private readonly typeEquipmentService: TypeEquipmentService) { }
 
+  @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
   @Post()
   create(@Body() createTypeEquipmentDto: CreateTypeEquipmentDto) {
     return this.typeEquipmentService.create(createTypeEquipmentDto);
   }
 
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin')
   @Get()
   findAll() {
     return this.typeEquipmentService.findAll();

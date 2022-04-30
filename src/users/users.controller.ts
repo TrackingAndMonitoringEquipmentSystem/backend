@@ -36,10 +36,10 @@ export class UsersController {
   ) { }
 
   @UseGuards(RolesAndDeptGuard)
-  @Roles('self', 'super_admin')
+  @Roles('super_admin', 'admin')
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Request() req) {
+    return this.service.findAll(req.user);
   }
 
   @UseGuards(RolesAndDeptGuard)
@@ -151,7 +151,7 @@ export class UsersController {
 
   @Post('sendNotiToUser')
   sendNoti(@Body() body) {
-    return this.service.sendNotiToUser(body.userId, body.data);
+    return this.service.sendNotiToUser(body.userId, body.payload);
   }
 
   @UseGuards(RolesAndDeptGuard)

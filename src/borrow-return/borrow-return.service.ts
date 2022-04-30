@@ -48,12 +48,13 @@ export class BorrowReturnService {
     return getResponse('00', groupId);
   }
 
-  async return(returnDto: ReturnDto) {
+  async return(groupId: number) {
     const today = new Date()
     const date = new Date();
     const borrows = await this.borrowReturnRepo.find({
       where: {
-        groupBorrow: returnDto.groupId
+        groupBorrow: groupId,
+        status: 'ยืมอยู่'
       },
       relations: ['equipment']
     })
@@ -64,9 +65,20 @@ export class BorrowReturnService {
       } else {
         await this.borrowReturnRepo.update(borrows[i].id, { return_at: date, status: 'ล่าช้า' });
       }
-      await this.equipmentService.updateStatus(borrows[i].equipment.equipment_id, 'พร้อมใช้งาน', returnDto.userId);
+      await this.equipmentService.updateStatus(borrows[i].equipment.equipment_id, 'พร้อมใช้งาน', borrows[i].user);
     };
     return getResponse('00', null);
+  }
+
+  async findGroupByUserId(userId: number) {
+    const result = await this.borrowReturnRepo.findOne({
+      where: {
+        user: userId,
+        status: 'ยืมอยู่'
+      },
+      relations: ['groupBorrow']
+    })
+    return getResponse('00', result.groupBorrow);
   }
 
   // async findAll(user: any) {
@@ -112,6 +124,16 @@ export class BorrowReturnService {
       relations: ['user'],
       where: {
         equipment: equipment
+      }
+    })
+    return getResponse('00', result);
+  }
+
+  async viewByGroupId(groupId: number) {
+    const result = await this.borrowReturnRepo.find({
+      relations: ['equipment', 'groupBorrow'],
+      where: {
+        groupBorrow: groupId
       }
     })
     return getResponse('00', result);
