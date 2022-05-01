@@ -16,6 +16,8 @@ jobs:
         run: cp -r "$(echo ${{secrets.APP_ENV_PATH}} | base64 --decode)/." ./src/config
       - name: run ci
         run: npm ci
+      - name: run migration
+        run: npx typeorm migration:run
       - name: run build
         run: npm run build
       - name: clean previous version
