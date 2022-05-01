@@ -22,7 +22,7 @@ export class LockerGateway
     this.logger.log('initialized');
   }
   handleConnection(client: any, ...args: any[]) {
-    this.logger.log(`Client connected: ${client}`);
+    this.logger.log(`client: ${client.id} is connected`);
   }
   handleDisconnect(client: any) {
     this.logger.log(`Client disconnected: ${client}`);
@@ -68,5 +68,36 @@ export class LockerGateway
       command: 'toggleLocker',
       data: { state, userId },
     });
+  }
+
+  @SubscribeMessage('locker/toggleLive')
+  onToggleLive(
+    @MessageBody()
+    data: {
+      lockerId: number;
+      cameraChannel: number;
+      state: boolean;
+    },
+  ) {
+    console.log('->data:', data);
+    this.server.emit(`locker/${data.lockerId}`, {
+      command: 'toggleLive',
+      data: data,
+    });
+  }
+
+  @SubscribeMessage('locker/live/response')
+  onLiveResponse(
+    @MessageBody()
+    data: {
+      lockerId: number;
+      cameraChannel: number;
+      base64Image: string;
+    },
+  ) {
+    this.server.emit(
+      `locker/${data.lockerId}/camera/${data.cameraChannel}`,
+      data.base64Image,
+    );
   }
 }

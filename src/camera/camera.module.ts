@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CameraService } from './camera.service';
 import { CameraController } from './camera.controller';
 import { Camera } from './entities/camera.entity';
@@ -7,7 +7,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Camera]), LockersModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([Camera]),
+    forwardRef(() => LockersModule),
+    UsersModule,
+  ],
   controllers: [CameraController],
   providers: [CameraService],
   exports: [CameraService],

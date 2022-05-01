@@ -13,6 +13,8 @@ import { Department } from 'src/department/entities/department.entity';
 import { TemporaryUserService } from 'src/temporary-user/temporary-user.service';
 import { TemporaryDeptService } from 'src/temporary-dept/temporary-dept.service';
 import { LockerGateway } from './locker.gateway';
+import { CameraService } from 'src/camera/camera.service';
+import { Camera } from 'src/camera/entities/camera.entity';
 
 @Injectable()
 export class LockersService {
@@ -26,6 +28,8 @@ export class LockersService {
     private readonly tempDeptService: TemporaryDeptService,
     private jwtService: JwtService,
     private lockerGateway: LockerGateway,
+    @InjectRepository(Camera)
+    private cameraRepository: Repository<Camera>,
   ) {}
 
   async register(
@@ -75,8 +79,13 @@ export class LockersService {
       updated_by: { id: 1 },
       num_camera: numCamera,
     });
-    await this.lockerRepository.save(locker);
-    return getResponse('00', locker);
+    const newLocker = await this.lockerRepository.save(locker);
+    const cameras: Camera[] = [];
+    for (let i = 0; i < numCamera; i++) {
+      cameras.push(this.cameraRepository.create({ locker: newLocker }));
+    }
+    await this.cameraRepository.save(cameras);
+    return getResponse('00', newLocker);
   }
 
   async findAll(user: any) {

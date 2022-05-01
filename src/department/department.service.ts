@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersService } from 'src/users/users.service';
 import { getResponse } from 'src/utils/response';
 import { In, Repository } from 'typeorm';
-import { resourceLimits } from 'worker_threads';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { Department } from './entities/department.entity';
@@ -13,7 +11,6 @@ export class DepartmentService {
   constructor(
     @InjectRepository(Department)
     private deptRepository: Repository<Department>,
-    private readonly userService: UsersService,
   ) {}
 
   async create(createDepartmentDto: CreateDepartmentDto, actorId) {

@@ -24,9 +24,9 @@ export class CameraController {
     return this.cameraService.create(createCameraDto);
   }
 
-  @Get()
-  findAll() {
-    return this.cameraService.findAll();
+  @Get(':lockerId')
+  findAll(@Param('lockerId') lockerId: number) {
+    return this.cameraService.findAll(lockerId);
   }
 
   @Get(':locker/:camera')

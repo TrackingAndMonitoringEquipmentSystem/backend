@@ -12,10 +12,12 @@ import { JwtStrategy } from './jwt.strategy';
 import { TemporaryDeptModule } from 'src/temporary-dept/temporary-dept.module';
 import { TemporaryUserModule } from 'src/temporary-user/temporary-user.module';
 import { LockerGateway } from './locker.gateway';
+import { CameraModule } from 'src/camera/camera.module';
+import { Camera } from 'src/camera/entities/camera.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Locker]),
+    TypeOrmModule.forFeature([Locker, Camera]),
     LocationModule,
     UsersModule,
     DepartmentModule,
@@ -25,6 +27,7 @@ import { LockerGateway } from './locker.gateway';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60s' },
     }),
+    forwardRef(() => CameraModule),
   ],
   controllers: [LockersController],
   providers: [LockersService, JwtStrategy, LockerGateway],

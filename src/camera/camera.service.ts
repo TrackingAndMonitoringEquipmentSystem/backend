@@ -27,9 +27,12 @@ export class CameraService {
     return getResponse('00', null);
   }
 
-  async findAll() {
+  async findAll(lockerId: number) {
     const result = await this.cameraRepository.find({
       relations: ['locker'],
+      where: {
+        locker: lockerId,
+      },
     });
     return getResponse('00', result);
   }
@@ -70,5 +73,19 @@ export class CameraService {
     }
     this.cameraRepository.remove(result);
     return getResponse('00', null);
+  }
+
+  async generateCamerasForLocker(lockerId: number, totalCameras: number) {
+    const cameras: Camera[] = [];
+    for (let i = 0; i < totalCameras; i++) {
+      cameras.push(
+        this.cameraRepository.create({
+          locker: { locker_id: lockerId },
+        }),
+      );
+    }
+    const results = await this.cameraRepository.save(cameras);
+
+    return getResponse('00', results);
   }
 }
