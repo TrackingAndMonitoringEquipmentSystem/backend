@@ -143,8 +143,10 @@ export class LockersService {
     return getResponse('00', null);
   }
 
-  async getOpenToken(actor: any, lockerId: string) {
+  async getOpenToken(actor: any, lockerId: string, state: boolean) {
     const payload = { email: actor.email, lockerId: lockerId };
+    const user = await this.userService.findByEmail(actor.email);
+    this.lockerGateway.toggleLocker(+lockerId, state, user.id);
     return getResponse('00', this.jwtService.sign(payload));
   }
 

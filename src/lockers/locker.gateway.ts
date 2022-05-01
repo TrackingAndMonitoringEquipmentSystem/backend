@@ -62,4 +62,11 @@ export class LockerGateway
     console.log('->data:', data[0]);
     this.addEquipmentResponseResolves[data.id](data);
   }
+
+  toggleLocker(lockerId: number, state: boolean, userId: number) {
+    this.server.emit(`locker/${lockerId}`, {
+      command: 'toggleLocker',
+      data: { state, userId },
+    });
+  }
 }

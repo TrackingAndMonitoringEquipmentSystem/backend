@@ -116,6 +116,7 @@ export class RolesAndLockerGuard implements CanActivate {
       }
     }
     request.actor = user;
+
     return hasPermission;
   }
 }

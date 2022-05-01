@@ -88,9 +88,13 @@ export class LockersController {
 
   @UseGuards(RolesAndLockerGuard)
   @Roles('super_admin', 'admin', 'tempUser')
-  @Get('getOpenToken/:locker')
-  getOpenToken(@Request() req, @Param('locker') id: string) {
-    return this.lockersService.getOpenToken(req.actor, id);
+  @Get('getOpenToken/:locker/:state')
+  getOpenToken(
+    @Request() req,
+    @Param('locker') id: string,
+    @Param('state') state: string,
+  ) {
+    return this.lockersService.getOpenToken(req.actor, id, state === 'true');
   }
 
   @UseGuards(AuthGuard('jwt')) //ใช้ได้แล้ว
