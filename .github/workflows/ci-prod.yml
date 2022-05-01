@@ -17,7 +17,7 @@ jobs:
       - name: run ci
         run: npm ci
       - name: run migration
-        run: npx typeorm migration:run
+        run: npm run typeorm:migration:run
       - name: run build
         run: npm run build
       - name: clean previous version
