@@ -113,6 +113,19 @@ export class LockersService {
     }
   }
 
+  async viewAllByUser(user: any) {
+    const departmentId = user.dept.id;
+    const result = await this.lockerRepository
+      .createQueryBuilder('locker')
+      .innerJoin('locker.department', 'department')
+      .innerJoinAndSelect('locker.room', 'room')
+      .innerJoinAndSelect('room.floor', 'floor')
+      .innerJoinAndSelect('floor.building', 'building')
+      .where('department.id = :departmentId', { departmentId })
+      .getMany();
+    return getResponse('00', result);
+  }
+
   async find(id: string) {
     const lockerIds = id.split(',').map(Number);
     console.log('->lockerIds:', lockerIds);

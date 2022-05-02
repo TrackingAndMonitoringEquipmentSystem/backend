@@ -52,7 +52,7 @@ export class EquipmentService {
   async findAll(user: any) {
     if (user.role.role == 'super_admin') {
       const result = await this.equipmentRepository.find({
-        relations: ['type', 'locker'],
+        relations: ['type', 'locker', 'created_by', 'updated_by'],
       });
       return getResponse('00', result);
     } else if (user.role.role == 'admin') {
@@ -61,13 +61,16 @@ export class EquipmentService {
         .createQueryBuilder('equipment')
         .innerJoinAndSelect('equipment.locker', 'locker')
         .innerJoinAndSelect('equipment.type', 'type')
+        .innerJoinAndSelect('equipment.created_by', 'created_by')
+        .innerJoinAndSelect('equipment.updated_by', 'updated_by')
         .innerJoin('locker.department', 'department')
         .where('department.id = :departmentId', { departmentId })
         .getMany();
       let equipNoType = await this.equipmentRepository
         .createQueryBuilder('equipment')
         .innerJoinAndSelect('equipment.locker', 'locker')
-        // .innerJoin('equipment.type', 'type')
+        .innerJoinAndSelect('equipment.created_by', 'created_by')
+        .innerJoinAndSelect('equipment.updated_by', 'updated_by')
         .innerJoin('locker.department', 'department')
         .where('department.id = :departmentId', { departmentId })
         .andWhere('equipment.type IS NULL')

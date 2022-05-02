@@ -136,6 +136,20 @@ export class UsersController {
   }
 
   @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin')
+  @Get('getWaitingUser')
+  getWaitingUser(@Request() req) {
+    return this.service.getWaitingUser(req.user);
+  }
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin')
+  @Get('getBlockedUser')
+  getBlockedUser(@Request() req) {
+    return this.service.getBlockedUser(req.user);
+  }
+
+  @UseGuards(RolesAndDeptGuard)
   @Roles(
     'self',
     'super_admin',
@@ -163,11 +177,12 @@ export class UsersController {
         destination: './uploads/csv',
         filename: csvFileName,
       }),
-      fileFilter: csvFileFilter,
+      // fileFilter: csvFileFilter,
     }
   ),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Request() req) {
+    console.log('file: ', file);
     return this.service.parse(req.user);
   }
 }

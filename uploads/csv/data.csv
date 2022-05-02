@@ -1,0 +1,4 @@
+﻿firstName,lastName,email,role,dept,tel
+Supreeya,Phasomsap,test1@email.com,admin,IT,093-145-3544
+,,test2@email.com,admin,IT,085-090-9494
+Spy,,test@email.com,user,IT,

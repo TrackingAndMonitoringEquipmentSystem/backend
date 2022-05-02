@@ -31,7 +31,9 @@ export class TypeEquipmentService {
   }
 
   async findAll() {
-    const result = await this.typeEquipRepo.find();
+    const result = await this.typeEquipRepo.find({
+      // relations: ['equipment']
+    });
     return getResponse('00', result);
   }
 

@@ -122,16 +122,24 @@ export class UsersService {
       }
     }
     if (hasPermission) {
-      for (let i = 0; i < createOnWeb.length; i++) {
-        let user = this.usersRepository.create({
-          ...createOnWeb[i],
-          status: 'Approved',
-          updated_by: actor.id,
-        });
-        await this.usersRepository.save(user);
-      }
+      // console.log('data: ', typeof createOnWeb);
+      let user = this.usersRepository.create({
+        ...createOnWeb,
+        status: 'Approved',
+        updated_by: actor.id,
+      });
+      await this.usersRepository.save(user);
+      // for (let i = 0; i < createOnWeb.length; i++) {
+      //   let user = this.usersRepository.create({
+      //     ...createOnWeb[i],
+      //     status: 'Approved',
+      //     updated_by: actor.id,
+      //   });
+      //   await this.usersRepository.save(user);
+      // }
+      return getResponse('00', null);
     }
-    return getResponse('00', null);
+    throw new HttpException(getResponse('32', null), HttpStatus.FORBIDDEN);
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto, actorId) {
@@ -186,6 +194,49 @@ export class UsersService {
     }
   }
 
+  async getWaitingUser(user: any) {
+    if (user.role.role == 'super_admin') {
+      const result = await this.usersRepository.find({
+        where: {
+          status: 'WaitingForApprove'
+        },
+        relations: ['dept', 'role']
+      })
+      return getResponse('00', result);
+    } else if (user.role.role == 'admin') {
+      const result = await this.usersRepository.find({
+        relations: ['dept', 'role'],
+        where: {
+          dept: user.dept.id,
+          role: Not(1),
+        }
+      });
+      return getResponse('00', result);
+    }
+    throw new HttpException(getResponse('99', null), HttpStatus.FORBIDDEN);
+  }
+  async getBlockedUser(user: any) {
+    if (user.role.role == 'super_admin') {
+      const result = await this.usersRepository.find({
+        relations: ['dept', 'role'],
+        where: {
+          status: 'Blocked'
+        }
+      });
+      return getResponse('00', result);
+    } else if (user.role.role == 'admin') {
+      const result = await this.usersRepository.find({
+        relations: ['dept', 'role'],
+        where: {
+          status: 'Blocked',
+          dept: user.dept.id,
+          role: In([2, 5])
+        }
+      });
+      return getResponse('00', result);
+    }
+    throw new HttpException(getResponse('99', null), HttpStatus.FORBIDDEN);
+  }
   async sendMail(email: string): Promise<any> {
     const result = await this.sendGrid.send({
       to: email,

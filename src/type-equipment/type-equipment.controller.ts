@@ -49,6 +49,7 @@ export class TypeEquipmentController {
     return this.typeEquipmentService.viewByEquipment(req.user);
   }
 
+  @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
   @Get('userViewEquipment')
   viewEquipment(@Request() req) {

@@ -11,7 +11,7 @@ export class DepartmentService {
   constructor(
     @InjectRepository(Department)
     private deptRepository: Repository<Department>,
-  ) {}
+  ) { }
 
   async create(createDepartmentDto: CreateDepartmentDto, actorId) {
     const dept = this.deptRepository.create({
@@ -25,7 +25,7 @@ export class DepartmentService {
 
   async viewAll() {
     const result = await this.deptRepository.find({
-      relations: ['created_by', 'updated_by', 'locker'],
+      relations: ['created_by', 'updated_by', 'locker', 'locker.room'],
     });
     return getResponse('00', result);
   }

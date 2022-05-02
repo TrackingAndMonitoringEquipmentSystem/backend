@@ -26,6 +26,8 @@ export class GroupBorrowService {
       .innerJoin('borrowReturns.user', 'user')
       .innerJoinAndSelect('borrowReturns.equipment', 'equipment')
       .where('user.id = :userId', { userId })
+      .orderBy('borrowReturns.borrowed_at', "DESC")
+      .limit(5)
       .getMany()
     return getResponse('00', result);
   }

@@ -219,6 +219,12 @@ const ResponseConstants: ResponseDto[] = [
   },
   {
     successful: false,
+    errorCode: '32',
+    message: `cannot create user`,
+    data: {},
+  },
+  {
+    successful: false,
     errorCode: '99',
     message: 'Internal Server Error',
     data: {},

@@ -21,6 +21,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { LockerGateway } from './locker.gateway';
 import { RolesAndDeptGuard } from 'src/utils/guard/rolesAndDept.guard';
+import { SaveEquipmentsRequestDto } from '../equipment/dto/save-equipments-request.dto';
+import { Role } from 'src/users/entities/role.entity';
 
 @ApiTags('lockers')
 @Controller('lockers')
@@ -46,6 +48,13 @@ export class LockersController {
   @Get()
   viewAll(@Request() req) {
     return this.lockersService.findAll(req.user);
+  }
+
+  @UseGuards(RolesAndDeptGuard)
+  @Roles('super_admin', 'admin', 'master_maintainer', 'maintainer', 'user')
+  @Get('userViewLocker')
+  userView(@Request() req) {
+    return this.lockersService.viewAllByUser(req.user);
   }
 
   @Post('preRegister/:numCamera')
