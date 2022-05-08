@@ -66,6 +66,7 @@ export class AuthenticationService {
     } else {
       userDto.status = 'WaitingForValidateEmail';
       const user = await this.usersService.createUser(userDto);
+      console.log('->user:', user);
       const getAdmin = await this.usersService.findByRole(
         ['super_admin', 'admin'],
         user.dept.id,
@@ -83,15 +84,18 @@ export class AuthenticationService {
         },
         tokens: tokens,
       };
-      admin
-        .messaging()
-        .sendMulticast(message)
-        .then((response) => {
-          console.log('Successfully sent message:', response);
-        })
-        .catch((error) => {
-          console.log('Error sending message:', error);
-        });
+      if (tokens.length) {
+        admin
+          .messaging()
+          .sendMulticast(message)
+          .then((response) => {
+            console.log('Successfully sent message:', response);
+          })
+          .catch((error) => {
+            console.log('Error sending message:', error);
+          });
+      }
+
       return getResponse('00', user);
     }
   }

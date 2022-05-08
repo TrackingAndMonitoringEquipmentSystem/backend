@@ -14,12 +14,12 @@ export class TypeEquipmentService {
     @InjectRepository(TypeEquipment)
     private typeEquipRepo: Repository<TypeEquipment>,
     private readonly equipmentService: EquipmentService,
-  ) { }
+  ) {}
   async create(createTypeEquipmentDto: CreateTypeEquipmentDto) {
     const result = await this.typeEquipRepo.findOne({
       where: {
-        name: createTypeEquipmentDto.name
-      }
+        name: createTypeEquipmentDto.name,
+      },
     });
     if (result == null) {
       throw new HttpException(getResponse('23', null), HttpStatus.FORBIDDEN);
@@ -40,8 +40,8 @@ export class TypeEquipmentService {
   async findOne(id: number) {
     const result = await this.typeEquipRepo.findOne({
       where: {
-        id: id
-      }
+        id: id,
+      },
     });
     if (result) {
       return getResponse('00', result);
@@ -50,11 +50,11 @@ export class TypeEquipmentService {
   }
 
   async update(id: number, updateTypeEquipmentDto: UpdateTypeEquipmentDto) {
-    await this.typeEquipRepo.update(id, { ...updateTypeEquipmentDto })
+    await this.typeEquipRepo.update(id, { ...updateTypeEquipmentDto });
     const result = await this.typeEquipRepo.findOne({
       where: {
-        id: id
-      }
+        id: id,
+      },
     });
     if (result) {
       return getResponse('00', result);
@@ -70,8 +70,8 @@ export class TypeEquipmentService {
   async findType(typeId: number | TypeEquipment) {
     const result = await this.typeEquipRepo.findOne({
       where: {
-        id: typeId
-      }
+        id: typeId,
+      },
     });
     return result;
   }
@@ -79,15 +79,27 @@ export class TypeEquipmentService {
   async viewByEquipment(user: any) {
     if (user.role.role == 'super_admin') {
       let equip = await this.typeEquipRepo.find({
-        relations: ['equipment', 'equipment.locker', 'equipment.locker.room', 'equipment.locker.room.floor', 'equipment.locker.room.floor.building']
+        relations: [
+          'equipment',
+          'equipment.locker',
+          'equipment.locker.room',
+          'equipment.locker.room.floor',
+          'equipment.locker.room.floor.building',
+        ],
       });
-      const equipNoType = { id: null, name: null, duration: null, equipment: await this.equipmentService.findEquipmentNoType() };
+      const equipNoType = {
+        id: null,
+        name: null,
+        duration: null,
+        equipment: await this.equipmentService.findEquipmentNoType(),
+      };
       equip.push(equipNoType);
       return getResponse('00', equip);
     } else if (user.role.role == 'admin') {
       const departmentId = user.dept.id;
 
-      let equip = await this.typeEquipRepo.createQueryBuilder('type')
+      let equip = await this.typeEquipRepo
+        .createQueryBuilder('type')
         .innerJoinAndSelect('type.equipment', 'equipment')
         .innerJoinAndSelect('equipment.locker', 'locker')
         .innerJoin('locker.department', 'department')
@@ -95,8 +107,10 @@ export class TypeEquipmentService {
         .innerJoinAndSelect('room.floor', 'floor')
         .innerJoinAndSelect('floor.building', 'building')
         .where('department.id = :departmentId', { departmentId })
-        .getMany()
-      const equipNoType = await createQueryBuilder().select("equipment").from(Equipment, "equipment")
+        .getMany();
+      const equipNoType = await createQueryBuilder()
+        .select('equipment')
+        .from(Equipment, 'equipment')
         .innerJoinAndSelect('equipment.locker', 'locker')
         .innerJoin('locker.department', 'department')
         .innerJoinAndSelect('locker.room', 'room')
@@ -104,15 +118,21 @@ export class TypeEquipmentService {
         .innerJoinAndSelect('floor.building', 'building')
         .where('department.id = :departmentId', { departmentId })
         .where('equipment.typeId IS NULL')
-        .getMany()
-      equip.push({ id: null, name: null, duration: null, equipment: equipNoType });
+        .getMany();
+      equip.push({
+        id: null,
+        name: null,
+        duration: null,
+        equipment: equipNoType,
+      });
       return getResponse('00', equip);
     }
   }
 
   async viewEquipment(user: any) {
     const departmentId = user.dept.id;
-    let equipment = await this.typeEquipRepo.createQueryBuilder('type')
+    let equipment = await this.typeEquipRepo
+      .createQueryBuilder('type')
       .innerJoin('type.equipment', 'equipment')
       .innerJoin('equipment.locker', 'locker')
       .innerJoin('locker.department', 'department')
@@ -123,7 +143,7 @@ export class TypeEquipmentService {
       .addSelect('equipment.equipment_id')
       .addSelect('equipment.equip_pic')
       .addSelect('COUNT(equipment.equipment_id) AS count_equipment')
-      .getRawMany()
+      .getRawMany();
 
     let equipNoType = await this.equipmentService.groupEquipNoType(user);
     for (let i in equipNoType) {
@@ -131,6 +151,4 @@ export class TypeEquipmentService {
     }
     return getResponse('00', equipment);
   }
-
-
 }
