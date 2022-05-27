@@ -34,8 +34,8 @@ export class UsersService {
   async findAll(user: any) {
     if (user.role.role == 'super_admin') {
       const result = await this.usersRepository.find({
-        relations: ['role', 'dept']
-      })
+        relations: ['role', 'dept'],
+      });
       return getResponse('00', result);
     } else if (user.role.role == 'admin') {
       const departmentId = user.dept.id;
@@ -43,12 +43,11 @@ export class UsersService {
         relations: ['role', 'dept'],
         where: {
           dept: departmentId,
-          role: Not(1)
-        }
-      })
+          role: Not(1),
+        },
+      });
       return getResponse('00', result);
     }
-
   }
 
   findById(id: number): Promise<User> {
@@ -204,10 +203,10 @@ export class UsersService {
     if (user.role.role == 'super_admin') {
       const result = await this.usersRepository.find({
         where: {
-          status: 'WaitingForApprove'
+          status: 'WaitingForApprove',
         },
-        relations: ['dept', 'role']
-      })
+        relations: ['dept', 'role'],
+      });
       return getResponse('00', result);
     } else if (user.role.role == 'admin') {
       const result = await this.usersRepository.find({
@@ -215,7 +214,7 @@ export class UsersService {
         where: {
           dept: user.dept.id,
           role: Not(1),
-        }
+        },
       });
       return getResponse('00', result);
     }
@@ -226,8 +225,8 @@ export class UsersService {
       const result = await this.usersRepository.find({
         relations: ['dept', 'role'],
         where: {
-          status: 'Blocked'
-        }
+          status: 'Blocked',
+        },
       });
       return getResponse('00', result);
     } else if (user.role.role == 'admin') {
@@ -236,8 +235,8 @@ export class UsersService {
         where: {
           status: 'Blocked',
           dept: user.dept.id,
-          role: In([2, 5])
-        }
+          role: In([2, 5]),
+        },
       });
       return getResponse('00', result);
     }
@@ -277,8 +276,8 @@ export class UsersService {
     const user = await this.usersRepository.findOne(userId);
     const message = {
       ...data,
-      token: user.fcm_token
-    }
+      token: user.fcm_token,
+    };
     console.log('data: ', data);
     admin
       .messaging()
@@ -349,16 +348,16 @@ export class UsersService {
     // console.log('filename: ', csvPath);
     const stream = createReadStream(csvPath);
     // console.log('stream: ', stream);
-    let entities: any = await this.csvParser.parse(
+    const entities: any = await this.csvParser.parse(
       stream,
       UserCsv,
       null,
       null,
       { strict: true, separator: ',' },
     );
-    let data = entities.list;
-    for (let i in data) {
-      let key = Object.keys(data[i]);
+    const data = entities.list;
+    for (const i in data) {
+      const key = Object.keys(data[i]);
       data[i].firstName = data[i][key[0]];
       delete data[i][key[0]];
       data[i].tel = data[i].tel.split('-').join('');
@@ -369,7 +368,7 @@ export class UsersService {
     const dept = await this.getAllDept();
     console.log('data: ', typeof data[0].role);
 
-    var mapFunction = {
+    const mapFunction = {
       firstName: (...args) => {
         // console.log('firstName: ', isNull(args[0]) || isString(args[0]))
         return isNull(args[0]) || isString(args[0]);
@@ -397,7 +396,7 @@ export class UsersService {
     };
 
     for (const i in data) {
-      let key = Object.keys(data[i]);
+      const key = Object.keys(data[i]);
       for (const j in key) {
         const checkData = mapFunction[key[j]](data[i][key[j]], role, dept);
         if (checkData == false) {

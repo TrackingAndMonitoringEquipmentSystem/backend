@@ -28,7 +28,7 @@ export class RolesAndDeptGuard implements CanActivate {
       7,
       headerAuthorization.length,
     );
-    console.log(authToken);
+    console.log('authToken:', authToken);
     try {
       actor = await admin.auth().verifyIdToken(authToken);
     } catch (error) {
@@ -38,12 +38,17 @@ export class RolesAndDeptGuard implements CanActivate {
     const id = request.params.id;
     const body = request.body;
     const actorInfo = await this.usersService.findByEmail(actor.email);
+    console.log('->actor:', actor);
     if (roles.includes('self') && roles.includes(actor.role)) {
+      console.log('->42');
       if (id == actorInfo.id) {
+        console.log('->43');
         hasPermission = true;
       } else if (actor.role == 'super_admin') {
+        console.log('->46');
         hasPermission = true;
       } else if (actor.role == 'admin') {
+        console.log('->49');
         if (
           !id &&
           actorInfo.dept.id == body.dept &&
@@ -69,6 +74,7 @@ export class RolesAndDeptGuard implements CanActivate {
           }
         }
       } else if (actor.role == 'master_maintainer') {
+        console.log('->75');
         if (
           !id &&
           actorInfo.dept.id == body.dept &&
@@ -94,7 +100,9 @@ export class RolesAndDeptGuard implements CanActivate {
           }
         }
       }
+      console.log('->101');
     } else if (roles.includes(actor.role)) {
+      console.log('->roles:', roles);
       hasPermission = true;
     }
 

@@ -53,7 +53,7 @@ export class AuthenticationService {
 
   async register(userDto: CreateUserDto): Promise<any> {
     let result = await this.usersService.findByEmail(userDto.email);
-    console.log(result);
+    // console.log(result);
     if (result) {
       if (result.status == 'Approved') {
         await this.usersService.updateUser(result.id, userDto, result.id);
@@ -64,9 +64,9 @@ export class AuthenticationService {
       /* else {
         return getResponse('01',null);}*/
     } else {
-      userDto.status = 'WaitingForValidateEmail';
+      userDto.status = 'WaitingForApprove';
       const user = await this.usersService.createUser(userDto);
-      console.log('->user:', user);
+      // console.log('->user:', user);
       const getAdmin = await this.usersService.findByRole(
         ['super_admin', 'admin'],
         user.dept.id,
@@ -105,7 +105,10 @@ export class AuthenticationService {
     await this.usersService.updateUser(
       result.id,
       {
-        status: 'SignedOut',
+        status:
+          result.status === 'WaitingForApprove'
+            ? 'WaitingForApprove'
+            : 'SignedOut',
         fcm_token: null,
       },
       result.id,

@@ -14,10 +14,10 @@ import { FileAssetsModule } from 'src/file-assets/file-assets.module';
     MulterModule.register({
       dest: './uploads/csv',
     }),
-    FileAssetsModule
+    FileAssetsModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],
 })
-export class UsersModule { }
+export class UsersModule {}

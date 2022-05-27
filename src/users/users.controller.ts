@@ -10,8 +10,15 @@ import {
   Request,
   UseInterceptors,
   UploadedFile,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
-import { csvFileFilter, csvFileName, getCSVFile, UsersService } from './users.service';
+import {
+  csvFileFilter,
+  csvFileName,
+  getCSVFile,
+  UsersService,
+} from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateOnWeb } from './dto/create-on-web.dto';
 import { SendGridService } from '@anchan828/nest-sendgrid';
@@ -25,6 +32,7 @@ import { diskStorage } from 'multer';
 import { createReadStream } from 'fs';
 import { UserCsv } from './dto/user-csv.dto';
 import { CsvParser } from 'nest-csv-parser';
+import { RolesAndSelfGuard } from 'src/utils/guard/rolesAndSelf.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -32,8 +40,8 @@ export class UsersController {
   constructor(
     private service: UsersService,
     private readonly sendGrid: SendGridService,
-    private readonly csvParser: CsvParser
-  ) { }
+    private readonly csvParser: CsvParser,
+  ) {}
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
@@ -149,15 +157,8 @@ export class UsersController {
     return this.service.getBlockedUser(req.user);
   }
 
-  @UseGuards(RolesAndDeptGuard)
-  @Roles(
-    'self',
-    'super_admin',
-    'admin',
-    'master_maintainer',
-    'maintainer',
-    'user',
-  )
+  @UseGuards(RolesAndSelfGuard)
+  @Roles('self', 'super_admin', 'admin')
   @Post('addFaceId/:id')
   addFaceId(@Body() body: any, @Request() req, @Param('id') id: number) {
     return this.service.addFaceid(id, body.imagebase64, req.user);
@@ -171,15 +172,14 @@ export class UsersController {
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'
-    , {
+  @UseInterceptors(
+    FileInterceptor('file', {
       storage: diskStorage({
         destination: './uploads/csv',
         filename: csvFileName,
       }),
       // fileFilter: csvFileFilter,
-    }
-  ),
+    }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Request() req) {
     console.log('file: ', file);
