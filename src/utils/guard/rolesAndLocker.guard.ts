@@ -17,11 +17,9 @@ export class RolesAndLockerGuard implements CanActivate {
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    console.log('roles:', roles);
     let user;
     let hasPermission = false;
     let deptIds: any[] = [];
-    console.log('test', Array.isArray(deptIds));
     const request = context.switchToHttp().getRequest();
 
     const headerAuthorization = request.headers.authorization;

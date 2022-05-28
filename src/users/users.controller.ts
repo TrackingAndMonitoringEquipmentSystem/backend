@@ -101,9 +101,13 @@ export class UsersController {
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('self', 'super_admin', 'admin')
-  @Put('approve/:id')
-  approve(@Request() req, @Param() params) {
-    return this.service.approve(params.id, req.actorId);
+  @Put('approveOrReject/:id/:isApproved')
+  approveOrReject(@Request() req, @Param() params) {
+    return this.service.approveOrReject(
+      params.id,
+      req.actorId,
+      params.isApproved === 'true',
+    );
   }
 
   @UseGuards(RolesAndDeptGuard)

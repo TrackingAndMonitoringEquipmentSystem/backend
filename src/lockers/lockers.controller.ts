@@ -63,7 +63,7 @@ export class LockersController {
   }
 
   @UseGuards(RolesAndLockerGuard)
-  @Roles('admin', 'super_admin')
+  @Roles('admin', 'super_admin', 'user')
   @Get('viewLocker/:locker')
   view(@Param('locker') id: string) {
     return this.lockersService.find(id);

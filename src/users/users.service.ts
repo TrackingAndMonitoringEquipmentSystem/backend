@@ -17,8 +17,6 @@ import { UserCsv } from './dto/user-csv.dto';
 import * as EmailValidator from 'email-validator';
 import { Role } from './entities/role.entity';
 import { Department } from 'src/department/entities/department.entity';
-import { v4 as uuidv4 } from 'uuid';
-import { readFileSync, writeFileSync } from 'fs';
 import { FileAssetsService } from 'src/file-assets/file-assets.service';
 
 @Injectable()
@@ -181,18 +179,17 @@ export class UsersService {
     return result;
   }
 
-  async approve(id: number, actorId) {
+  async approveOrReject(id: number, actorId: any, isApproved: boolean) {
     const user = await this.usersRepository.findOne({
       where: { id: id },
       relations: ['dept'],
     });
     if (user.status == 'WaitingForApprove') {
       this.usersRepository.update(id, {
-        status: 'Approved',
+        status: isApproved ? 'Approved' : 'Rejected',
         updated_by: actorId,
       });
-      this.sendNotiToOne(user.fcm_token);
-      this.sendMail(user.email);
+      // this.sendMail(user.email);
       return getResponse('00', null);
     } else {
       throw new HttpException(getResponse('05', null), HttpStatus.FORBIDDEN);
