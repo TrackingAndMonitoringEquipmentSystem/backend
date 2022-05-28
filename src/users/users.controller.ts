@@ -29,8 +29,6 @@ import { CreateByAdmin } from './dto/create-by-admin.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { createReadStream } from 'fs';
-import { UserCsv } from './dto/user-csv.dto';
 import { CsvParser } from 'nest-csv-parser';
 import { RolesAndSelfGuard } from 'src/utils/guard/rolesAndSelf.guard';
 
@@ -103,7 +101,7 @@ export class UsersController {
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('self', 'super_admin', 'admin')
-  @Put('/approve/:id')
+  @Put('approve/:id')
   approve(@Request() req, @Param() params) {
     return this.service.approve(params.id, req.actorId);
   }
