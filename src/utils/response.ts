@@ -202,7 +202,7 @@ const ResponseConstants: ResponseDto[] = [
   {
     successful: false,
     errorCode: '30',
-    message: `data isn't correct`,
+    message: `Mac address already existed`,
     data: {},
   },
   {

@@ -39,7 +39,14 @@ export class EquipmentService {
       } catch (error) {
         if (error instanceof QueryFailedError) {
           const queryError = error as QueryFailedError;
-          if (queryError.name === 'QueryFailedError') {
+          console.log(
+            '->queryError.driverError.code:',
+            queryError.driverError.code,
+          );
+          if (
+            queryError.name === 'QueryFailedError' &&
+            queryError.driverError.code == 'ER_DUP_ENTRY'
+          ) {
             return getResponse('30', null);
           }
           return getResponse('99', null);
@@ -80,7 +87,6 @@ export class EquipmentService {
       result = result.concat(equipNoType);
       return getResponse('00', result);
     }
-
   }
 
   async find(id: string) {
@@ -98,10 +104,10 @@ export class EquipmentService {
   async findByTagIds(tag_ids: any) {
     const result = await this.equipmentRepository.find({
       where: {
-        tag_id: In(tag_ids)
+        tag_id: In(tag_ids),
       },
-      relations: ['type']
-    })
+      relations: ['type'],
+    });
     if (result.length == tag_ids.length) {
       return result;
     } else {
@@ -220,7 +226,7 @@ export class EquipmentService {
     });
 
     const result = await this.create(createEquipmentDtos, email);
-
+    console.log('->result:', result);
     if (result.successful) {
       this.lockerGateway.saveEquipment(
         saveEquipmentsRequestDto.lockerId,
@@ -238,5 +244,4 @@ export class EquipmentService {
       throw result;
     }
   }
-
 }

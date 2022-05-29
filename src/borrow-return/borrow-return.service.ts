@@ -18,13 +18,15 @@ export class BorrowReturnService {
     private readonly groupBorrow: GroupBorrowService,
     private readonly equipmentService: EquipmentService,
     private readonly usersService: UsersService,
-  ) { }
+  ) {}
 
   async borrow(createBorrowRetunDto: CreateBorrowReturnDto) {
     //let equipmentIds = ids.split(',').map(Number);
     const today = new Date();
-    let equip = await this.equipmentService.findByTagIds(createBorrowRetunDto.tag_ids);
-    // console.log('equip: ', equip);
+    let equip = await this.equipmentService.findByTagIds(
+      createBorrowRetunDto.tag_ids,
+    );
+    console.log('equip: ', equip);
     const groupId = await this.groupBorrow.create();
     for (let i = 0; i < equip.length; i++) {
       let deadline = new Date();
@@ -40,33 +42,47 @@ export class BorrowReturnService {
         groupBorrow: groupId,
         equipment: equip[i],
         user: createBorrowRetunDto.userId,
-        status: 'ยืมอยู่'
+        status: 'ยืมอยู่',
       });
       await this.borrowReturnRepo.save(borrow);
-      await this.equipmentService.updateStatus(equip[i].equipment_id, 'ยืมอยู่', createBorrowRetunDto.userId);
-    };
+      await this.equipmentService.updateStatus(
+        equip[i].equipment_id,
+        'ยืมอยู่',
+        createBorrowRetunDto.userId,
+      );
+    }
     return getResponse('00', groupId);
   }
 
   async return(groupId: number) {
-    const today = new Date()
+    const today = new Date();
     const date = new Date();
     const borrows = await this.borrowReturnRepo.find({
       where: {
         groupBorrow: groupId,
-        status: 'ยืมอยู่'
+        status: 'ยืมอยู่',
       },
-      relations: ['equipment']
-    })
+      relations: ['equipment'],
+    });
     console.log('transacton: ', borrows);
     for (let i = 0; i < borrows.length; i++) {
       if (today <= borrows[i].deadline_at) {
-        await this.borrowReturnRepo.update(borrows[i].id, { return_at: date, status: 'คืนแล้ว' });
+        await this.borrowReturnRepo.update(borrows[i].id, {
+          return_at: date,
+          status: 'คืนแล้ว',
+        });
       } else {
-        await this.borrowReturnRepo.update(borrows[i].id, { return_at: date, status: 'ล่าช้า' });
+        await this.borrowReturnRepo.update(borrows[i].id, {
+          return_at: date,
+          status: 'ล่าช้า',
+        });
       }
-      await this.equipmentService.updateStatus(borrows[i].equipment.equipment_id, 'พร้อมใช้งาน', borrows[i].user);
-    };
+      await this.equipmentService.updateStatus(
+        borrows[i].equipment.equipment_id,
+        'พร้อมใช้งาน',
+        borrows[i].user,
+      );
+    }
     return getResponse('00', null);
   }
 
@@ -74,10 +90,10 @@ export class BorrowReturnService {
     const result = await this.borrowReturnRepo.findOne({
       where: {
         user: userId,
-        status: 'ยืมอยู่'
+        status: 'ยืมอยู่',
       },
-      relations: ['groupBorrow']
-    })
+      relations: ['groupBorrow'],
+    });
     return getResponse('00', result.groupBorrow);
   }
 
@@ -93,8 +109,8 @@ export class BorrowReturnService {
 
   async findOne(id: number) {
     const result = await this.borrowReturnRepo.findOne(id, {
-      relations: ['equipment']
-    })
+      relations: ['equipment'],
+    });
     return result;
   }
 
@@ -104,7 +120,7 @@ export class BorrowReturnService {
     if (status == 'คืนแล้ว') {
       result = await this.borrowReturnRepo.update(borrowId, {
         status: status,
-        return_at: today
+        return_at: today,
       });
     } else {
       result = await this.borrowReturnRepo.update(borrowId, {
@@ -115,7 +131,7 @@ export class BorrowReturnService {
   }
 
   async remove(id: number) {
-    await this.borrowReturnRepo.delete(id)
+    await this.borrowReturnRepo.delete(id);
     return getResponse('00', null);
   }
 
@@ -123,19 +139,26 @@ export class BorrowReturnService {
     const result = await this.borrowReturnRepo.find({
       relations: ['user'],
       where: {
-        equipment: equipment
-      }
-    })
+        equipment: equipment,
+      },
+    });
     return getResponse('00', result);
   }
 
   async viewByGroupId(groupId: number) {
     const result = await this.borrowReturnRepo.find({
-      relations: ['equipment', 'groupBorrow'],
+      relations: [
+        'equipment',
+        'groupBorrow',
+        'equipment.locker',
+        'equipment.locker.room',
+        'equipment.locker.room.floor',
+        'equipment.locker.room.floor.building',
+      ],
       where: {
-        groupBorrow: groupId
-      }
-    })
+        groupBorrow: groupId,
+      },
+    });
     return getResponse('00', result);
   }
 }

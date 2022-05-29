@@ -49,6 +49,7 @@ export class LockersService {
       const dept = await this.departmentService.findDept(
         createLockerDto.deptId,
       );
+      console.log('->dept:', dept);
       const user = await this.userService.findByEmail(actor.email);
       if (room.successful) {
         await this.lockerRepository.save({

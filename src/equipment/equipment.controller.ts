@@ -18,7 +18,7 @@ import { SaveEquipmentsRequestDto } from './dto/save-equipments-request.dto';
 
 @Controller('equipment')
 export class EquipmentController {
-  constructor(private readonly equipmentService: EquipmentService) { }
+  constructor(private readonly equipmentService: EquipmentService) {}
 
   @UseGuards(RolesAndDeptGuard)
   @Roles('super_admin', 'admin')
@@ -71,6 +71,7 @@ export class EquipmentController {
     @Body() saveEquipmentsRequestDto: SaveEquipmentsRequestDto,
     @Request() req,
   ) {
+    console.log('->saveEquipmentsRequestDto:', saveEquipmentsRequestDto);
     return await this.equipmentService.saveEquipments(
       saveEquipmentsRequestDto,
       req.actor,
