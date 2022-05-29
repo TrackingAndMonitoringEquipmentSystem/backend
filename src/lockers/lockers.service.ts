@@ -83,7 +83,12 @@ export class LockersService {
     const newLocker = await this.lockerRepository.save(locker);
     const cameras: Camera[] = [];
     for (let i = 0; i < numCamera; i++) {
-      cameras.push(this.cameraRepository.create({ locker: newLocker }));
+      cameras.push(
+        this.cameraRepository.create({
+          locker: newLocker,
+          name: 'camera' + i + 1,
+        }),
+      );
     }
     await this.cameraRepository.save(cameras);
     return getResponse('00', newLocker);
